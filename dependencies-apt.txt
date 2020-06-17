@@ -1,0 +1,40 @@
+# LIST YOUR APT PACKAGES HERE
+
+# development tools & libraries
+gcc
+wget
+sudo
+locales
+locales-all
+i2c-tools
+libxslt-dev
+libffi-dev
+libturbojpeg
+libblas-dev
+liblapack-dev
+libatlas-base-dev
+
+# Python dependencies
+python-pip
+python-wheel
+python-smbus
+python-termcolor
+python-tables
+python-lxml
+python-bs4
+python-catkin-tools
+python-pymongo
+
+# Python3 dependencies
+python3.7
+python3.7-dev
+
+# ROS packages
+ros-kinetic-robot
+ros-kinetic-joystick-drivers
+
+# this is for dt-advertise
+avahi-utils
+
+# this is for MDNS name resolution (still needs the avahi socket to be mounted)
+libnss-mdns
