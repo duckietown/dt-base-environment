@@ -116,7 +116,7 @@ COPY assets/environment.sh /environment.sh
 RUN echo none > /status
 HEALTHCHECK \
     --interval=5s \
-    CMD grep -q healthy /status
+    CMD grep -q healthy /health
 
 # configure catkin to work nicely with docker
 RUN sed \
