@@ -113,10 +113,10 @@ COPY assets/entrypoint.sh /entrypoint.sh
 COPY assets/environment.sh /environment.sh
 
 # define healthcheck
-RUN echo none > /status
+RUN echo ND > /status
 HEALTHCHECK \
     --interval=5s \
-    CMD grep -q healthy /health
+    CMD cat /health && grep -q ^healthy$ /health
 
 # configure catkin to work nicely with docker
 RUN sed \

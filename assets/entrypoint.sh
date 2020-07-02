@@ -8,6 +8,9 @@ ROBOT_CONFIGURATION_FILE=${CONFIG_DIR}/robot_configuration
 # if anything weird happens from now on, STOP
 set -e
 
+# reset health
+echo ND > /status
+
 # get container ID
 DT_MODULE_INSTANCE=$(basename "$(cat /proc/1/cpuset)")
 export DT_MODULE_INSTANCE
