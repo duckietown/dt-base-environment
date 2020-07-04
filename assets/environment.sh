@@ -22,13 +22,13 @@ dt-join() {
   set -e
 }
 
-dt-launcher-init() {
+dt-launchfile-init() {
   set -e
   # register signal handlers
   dt-register-signals
 }
 
-dt-launcher-join() {
+dt-launchfile-join() {
   # wait for the process to end
   dt-join
   # wait for stdout to flush, then announce app termination

@@ -34,9 +34,7 @@ configure_vehicle(){
   export VEHICLE_NAME="${VEHICLE_NAME}"
 
   # check optional arguments
-  VEHICLE_IP_IS_SET=0
   if [ ${#VEHICLE_IP} -ne 0 ]; then
-    VEHICLE_IP_IS_SET=1
     echo "The environment variable VEHICLE_IP is set to '${VEHICLE_IP}'. Adding to /etc/hosts."
     {
       echo "${VEHICLE_IP} ${VEHICLE_NAME} ${VEHICLE_NAME}.local" | dd of=/etc/hosts &>/dev/null
@@ -125,7 +123,7 @@ debug "=> Setting up PYTHONPATH..."
 configure_python
 debug "<= Done!\n"
 
-debug "=> Configuring ROS environment..."
+debug "=> Setting up ROS environment..."
 configure_ROS
 debug "<= Done!\n"
 
