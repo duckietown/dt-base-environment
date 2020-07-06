@@ -114,6 +114,7 @@ COPY assets/environment.sh /environment.sh
 
 # define healthcheck
 RUN echo ND > /status
+RUN chmod 777 /status
 HEALTHCHECK \
     --interval=5s \
     CMD cat /health && grep -q ^healthy$ /health
