@@ -3,7 +3,7 @@ ARG ARCH=arm32v7
 ARG ROS_DISTRO=kinetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=xenial
-ARG MAJOR=daffy
+ARG DISTRO=daffy
 ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
@@ -17,7 +17,7 @@ ARG ARCH
 ARG OS_FAMILY
 ARG OS_DISTRO
 ARG ROS_DISTRO
-ARG MAJOR
+ARG DISTRO
 ARG LAUNCHER
 ARG REPO_NAME
 ARG MAINTAINER
@@ -60,13 +60,15 @@ ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 
 # setup ROS sources
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" > /etc/apt/sources.list.d/ros1-latest.list
+RUN apt-key adv \
+    --keyserver hkp://keyserver.ubuntu.com:80 \
+    --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
 
 # add python3.7 sources to APT
 #TODO: this can go once we move to Focal
-RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list
-RUN echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> /etc/apt/sources.list
+RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
+RUN echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
 RUN gpg --keyserver keyserver.ubuntu.com --recv 6A755776 \
  && gpg --export --armor 6A755776 | apt-key add -
 
@@ -83,7 +85,7 @@ RUN pip install -r "${REPO_PATH}/dependencies-py.txt"
 
 # update alternatives for python, python3
 #TODO: this can go once we move to Focal
-RUN update-alternatives --install /usr/bin/python3 python /usr/bin/python3.7 1
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
 
 # install pip3
 #TODO: this can go once we move to Focal
@@ -108,10 +110,6 @@ COPY ./packages/. "${REPO_PATH}/"
 # copy binaries
 COPY ./assets/bin/. /usr/local/bin/
 
-# copy environment / entrypoint
-COPY assets/entrypoint.sh /entrypoint.sh
-COPY assets/environment.sh /environment.sh
-
 # define healthcheck
 RUN echo ND > /status
 RUN chmod 777 /status
@@ -126,7 +124,7 @@ RUN sed \
   /usr/lib/python2.7/dist-packages/catkin_tools/common.py
 
 # configure entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"
@@ -136,9 +134,10 @@ RUN dt-install-launchers "${LAUNCH_PATH}"
 CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
 
 # store module metadata
-LABEL org.duckietown.label.architecture="${ARCH}"
-LABEL org.duckietown.label.module.type="${REPO_NAME}"
-LABEL org.duckietown.label.code.location="${REPO_PATH}"
-LABEL org.duckietown.label.code.version.major="${MAJOR}"
-LABEL org.duckietown.label.base.image="${OS_FAMILY}:${OS_DISTRO}"
-LABEL org.duckietown.label.maintainer="${MAINTAINER}"
+LABEL org.duckietown.label.architecture="${ARCH}" \
+    org.duckietown.label.module.type="${REPO_NAME}" \
+    org.duckietown.label.code.location="${REPO_PATH}" \
+    org.duckietown.label.code.version.distro="${DISTRO}" \
+    org.duckietown.label.base.image="${OS_FAMILY}" \
+    org.duckietown.label.base.tag="${OS_DISTRO}" \
+    org.duckietown.label.maintainer="${MAINTAINER}"

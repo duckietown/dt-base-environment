@@ -3,7 +3,3 @@ setuptools
 wheel
 pyyaml
 psutil
-
-# these are for service registration and discovery
-zeroconf
-netifaces

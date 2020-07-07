@@ -4,6 +4,7 @@
 gcc
 wget
 sudo
+nano
 locales
 locales-all
 i2c-tools
@@ -30,8 +31,9 @@ python3.7
 python3.7-dev
 
 # ROS packages
+ros-kinetic-rospy
 ros-kinetic-robot
-ros-kinetic-joystick-drivers
+ros-kinetic-cv-bridge
 
 # this is for dt-advertise
 avahi-utils
