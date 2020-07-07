@@ -93,6 +93,8 @@ RUN cd /tmp \
   && wget --no-check-certificate http://bootstrap.pypa.io/get-pip.py \
   && python3 ./get-pip.py \
   && rm ./get-pip.py
+# remove the newly installed binary pip shadowing the Python2 pip
+RUN rm /usr/local/bin/pip
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
@@ -122,9 +124,6 @@ RUN sed \
   -i \
   's/__default_terminal_width = 80/__default_terminal_width = 160/' \
   /usr/lib/python2.7/dist-packages/catkin_tools/common.py
-
-# configure entrypoint
-ENTRYPOINT ["/bin/bash"]
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"
