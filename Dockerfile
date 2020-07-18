@@ -79,6 +79,9 @@ RUN apt-get update \
     $(awk -F: '/^[^#]/ { print $1 }' "${REPO_PATH}/dependencies-apt.txt" | uniq) \
   && rm -rf /var/lib/apt/lists/*
 
+# upgrade PIP
+RUN pip install -U pip
+
 # install dependencies (PIP)
 COPY ./dependencies-py.txt "${REPO_PATH}/"
 RUN pip install -r "${REPO_PATH}/dependencies-py.txt"
