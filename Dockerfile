@@ -1,8 +1,8 @@
 # parameters
 ARG ARCH=arm32v7
-ARG ROS_DISTRO=kinetic
+ARG ROS_DISTRO=neotic
 ARG OS_FAMILY=ubuntu
-ARG OS_DISTRO=xenial
+ARG OS_DISTRO=focal
 ARG DISTRO=daffy
 ARG LAUNCHER=default
 # ---
@@ -67,10 +67,10 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/
 
 # add python3.7 sources to APT
 #TODO: this can go once we move to Focal
-RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
-RUN echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
-RUN gpg --keyserver keyserver.ubuntu.com --recv 6A755776 \
- && gpg --export --armor 6A755776 | apt-key add -
+#RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
+#RUN echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
+#RUN gpg --keyserver keyserver.ubuntu.com --recv 6A755776 \
+# && gpg --export --armor 6A755776 | apt-key add -
 
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
@@ -88,16 +88,16 @@ RUN pip install -r "${REPO_PATH}/dependencies-py.txt"
 
 # update alternatives for python, python3
 #TODO: this can go once we move to Focal
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
+#RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
 
 # install pip3
 #TODO: this can go once we move to Focal
-RUN cd /tmp \
-  && wget --no-check-certificate http://bootstrap.pypa.io/get-pip.py \
-  && python3 ./get-pip.py \
-  && rm ./get-pip.py
-# remove the newly installed binary pip shadowing the Python2 pip
-RUN rm /usr/local/bin/pip
+#RUN cd /tmp \
+#  && wget --no-check-certificate http://bootstrap.pypa.io/get-pip.py \
+#  && python3 ./get-pip.py \
+#  && rm ./get-pip.py
+## remove the newly installed binary pip shadowing the Python2 pip
+#RUN rm /usr/local/bin/pip
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
