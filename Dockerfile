@@ -88,11 +88,12 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # upgrade PIP
-RUN pip install -U pip
+RUN pip3 install -U pip
 
 # install dependencies (PIP)
-COPY ./dependencies-py.txt "${REPO_PATH}/"
-RUN pip install -r "${REPO_PATH}/dependencies-py.txt"
+# Note: Those were moved to python3 and updated to newer version
+# COPY ./dependencies-py.txt "${REPO_PATH}/"
+# RUN pip3 install -r "${REPO_PATH}/dependencies-py.txt"
 
 # update alternatives for python, python3
 #TODO: this can go once we move to Focal

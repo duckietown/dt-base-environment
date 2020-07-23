@@ -3,3 +3,9 @@ setuptools
 wheel
 pyyaml
 psutil
+
+matplotlib==3.3.0
+numpy==1.19.1
+networkx==2.4
+Pillow==7.2.0
+kiwisolver==1.2.0
