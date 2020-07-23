@@ -21,6 +21,7 @@ ARG DISTRO
 ARG LAUNCHER
 ARG REPO_NAME
 ARG MAINTAINER
+ARG DEBIAN_FRONTEND=noninteractive
 
 # setup environment
 ENV INITSYSTEM off
@@ -31,6 +32,7 @@ ENV LC_ALL C.UTF-8
 ENV READTHEDOCS True
 ENV PYTHONIOENCODING UTF-8
 ENV DISABLE_CONTRACTS 1
+ENV TZ=America/New_York
 
 # keep some arguments as environment variables
 ENV OS_FAMILY "${OS_FAMILY}"

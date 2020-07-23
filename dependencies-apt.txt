@@ -17,24 +17,24 @@ liblapack-dev
 libatlas-base-dev
 
 # Python dependencies
-python-pip
-python-wheel
-python-smbus
-python-termcolor
-python-tables
-python-lxml
-python-bs4
-python-catkin-tools
-python-pymongo
+python3-pip
+python3-wheel
+python3-smbus
+python3-termcolor
+python3-tables
+python3-lxml
+python3-bs4
+python3-catkin-tools
+python3-pymongo
 
 # Python3 dependencies
-python3.7
-python3.7-dev
+# python3.7
+# python3.7-dev
 
 # ROS packages
-ros-neotic-rospy
-ros-neotic-robot
-ros-neotic-cv-bridge
+ros-noetic-rospy
+ros-noetic-robot
+ros-noetic-cv-bridge
 
 # this is for dt-advertise
 avahi-utils
@@ -45,7 +45,9 @@ libnss-mdns
 # these are required to build `matplotlib` on Arm
 libfreetype6-dev
 pkg-config
-libpng12-dev
+# Following was upgraded to 16 in focal
+# libpng12-dev
+libpng-dev
 g++
 
 # these are required to build `Pillow` on Arm
