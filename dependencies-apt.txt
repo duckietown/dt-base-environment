@@ -2,6 +2,7 @@
 
 # development tools & libraries
 gcc
+gnupg
 wget
 sudo
 nano
@@ -31,9 +32,9 @@ python3.7
 python3.7-dev
 
 # ROS packages
-ros-kinetic-rospy
-ros-kinetic-robot
-ros-kinetic-cv-bridge
+ros-neotic-rospy
+ros-neotic-robot
+ros-neotic-cv-bridge
 
 # this is for dt-advertise
 avahi-utils
