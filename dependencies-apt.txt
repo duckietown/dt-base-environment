@@ -2,7 +2,6 @@
 
 # development tools & libraries
 gcc
-gnupg
 wget
 sudo
 nano

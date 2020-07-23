@@ -135,7 +135,7 @@ HEALTHCHECK \
 RUN sed \
   -i \
   's/__default_terminal_width = 80/__default_terminal_width = 160/' \
-  /usr/lib/python2.7/dist-packages/catkin_tools/common.py
+  /usr/lib/python3/dist-packages/catkin_tools/common.py
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"
