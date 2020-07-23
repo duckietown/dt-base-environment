@@ -116,8 +116,8 @@ COPY ./packages/. "${REPO_PATH}/"
 COPY ./assets/bin/. /usr/local/bin/
 
 # define healthcheck
-RUN echo ND > /status
-RUN chmod 777 /status
+RUN echo ND > /health
+RUN chmod 777 /health
 HEALTHCHECK \
     --interval=5s \
     CMD cat /health && grep -q ^healthy$ /health
