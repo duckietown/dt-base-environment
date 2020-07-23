@@ -59,6 +59,12 @@ RUN mkdir -p "${LAUNCH_PATH}"
 ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 
+# Install gnupg required for apt-key (not in base image since Focal)
+# TODO we should find a fix to make it cleaner / inside dep-apt.txt
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends gnupg \
+  && rm -rf /var/lib/apt/lists/*
+
 # setup ROS sources
 RUN apt-key adv \
     --keyserver hkp://keyserver.ubuntu.com:80 \
