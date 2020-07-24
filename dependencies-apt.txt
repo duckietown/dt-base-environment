@@ -25,6 +25,9 @@ python3-lxml
 python3-bs4
 python3-catkin-tools
 python3-pymongo
+# Following required to be installed through apt
+# throws freetype error on install through pip
+python3-matplotlib
 
 # Python3 dependencies
 # python3.7
