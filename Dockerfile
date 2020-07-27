@@ -1,6 +1,6 @@
 # parameters
 ARG ARCH=arm32v7
-ARG ROS_DISTRO=neotic
+ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
 ARG DISTRO=daffy
