@@ -8,6 +8,8 @@ ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
 ARG MAINTAINER="Andrea F. Daniele (afdaniele@ttic.edu)"
+ARG DESCRIPTION="Base image of any Duckietown software module. Based on ${OS_FAMILY}:${OS_DISTRO}."
+ARG ICON="square"
 
 # base image
 FROM ${ARCH}/${OS_FAMILY}:${OS_DISTRO}
@@ -20,7 +22,9 @@ ARG ROS_DISTRO
 ARG DISTRO
 ARG LAUNCHER
 ARG REPO_NAME
+ARG DESCRIPTION
 ARG MAINTAINER
+ARG ICON
 
 # setup environment
 ENV INITSYSTEM off
@@ -37,6 +41,8 @@ ENV OS_FAMILY "${OS_FAMILY}"
 ENV OS_DISTRO "${OS_DISTRO}"
 ENV ROS_DISTRO "${ROS_DISTRO}"
 ENV DT_MODULE_TYPE "${REPO_NAME}"
+ENV DT_MODULE_DESCRIPTION "${DESCRIPTION}"
+ENV DT_MODULE_ICON "${ICON}"
 ENV DT_MAINTAINER "${MAINTAINER}"
 ENV DT_LAUNCHER "${LAUNCHER}"
 
@@ -50,6 +56,9 @@ WORKDIR "${SOURCE_DIR}"
 
 # copy QEMU
 COPY ./assets/qemu/${ARCH}/ /usr/bin/
+
+# copy binaries
+COPY ./assets/bin/. /usr/local/bin/
 
 # define and create repository paths
 ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
@@ -74,10 +83,7 @@ RUN gpg --keyserver keyserver.ubuntu.com --recv 6A755776 \
 
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    $(awk -F: '/^[^#]/ { print $1 }' "${REPO_PATH}/dependencies-apt.txt" | uniq) \
-  && rm -rf /var/lib/apt/lists/*
+RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 
 # upgrade PIP
 RUN pip install -U pip
@@ -112,9 +118,6 @@ ENV PATH=/opt/vc/bin:${PATH}
 # copy the source code
 COPY ./packages/. "${REPO_PATH}/"
 
-# copy binaries
-COPY ./assets/bin/. /usr/local/bin/
-
 # define healthcheck
 RUN echo ND > /health
 RUN chmod 777 /health
@@ -136,8 +139,10 @@ RUN dt-install-launchers "${LAUNCH_PATH}"
 CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
 
 # store module metadata
-LABEL org.duckietown.label.architecture="${ARCH}" \
-    org.duckietown.label.module.type="${REPO_NAME}" \
+LABEL org.duckietown.label.module.type="${REPO_NAME}" \
+    org.duckietown.label.module.description="${DESCRIPTION}" \
+    org.duckietown.label.module.icon="${ICON}" \
+    org.duckietown.label.architecture="${ARCH}" \
     org.duckietown.label.code.location="${REPO_PATH}" \
     org.duckietown.label.code.version.distro="${DISTRO}" \
     org.duckietown.label.base.image="${OS_FAMILY}" \

@@ -9,6 +9,7 @@
 # get arguments
 REPO_NAME=$1
 MAINTAINER=$2
+DESCRIPTION=$3
 
 # check REPO_NAME
 if [ "${REPO_NAME}" = "<REPO_NAME_HERE>" ]; then
@@ -20,6 +21,12 @@ fi
 if [ "${MAINTAINER}" = "<YOUR_FULL_NAME> (<YOUR_EMAIL_ADDRESS>)" ]; then
   >&2 echo "ERROR: You need to change the value of MAINTAINER inside Dockerfile.";
   exit 2;
+fi
+
+# check DESCRIPTION
+if [ "${DESCRIPTION}" = "<DESCRIPTION_HERE>" ]; then
+  >&2 echo "ERROR: You need to change the value of DESCRIPTION inside Dockerfile.";
+  exit 3;
 fi
 
 # everything should be OK
