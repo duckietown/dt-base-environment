@@ -35,7 +35,7 @@ ENV LC_ALL C.UTF-8
 ENV READTHEDOCS True
 ENV PYTHONIOENCODING UTF-8
 ENV DISABLE_CONTRACTS 1
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND noninteractive
 
 # keep some arguments as environment variables
 ENV OS_FAMILY "${OS_FAMILY}"
