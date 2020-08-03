@@ -1,6 +1,6 @@
 # parameters
 ARG ARCH=arm32v7
-ARG ROS_DISTRO=neotic
+ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
 ARG DISTRO=daffy
@@ -135,7 +135,7 @@ HEALTHCHECK \
 RUN sed \
   -i \
   's/__default_terminal_width = 80/__default_terminal_width = 160/' \
-  /usr/lib/python2.7/dist-packages/catkin_tools/common.py
+  /usr/lib/python3/dist-packages/catkin_tools/common.py
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"
