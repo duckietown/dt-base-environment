@@ -1,7 +1,8 @@
 # LIST YOUR APT PACKAGES HERE
 
 # development tools & libraries
-gcc
+build-essential
+vim
 wget
 sudo
 nano
