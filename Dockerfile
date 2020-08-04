@@ -8,6 +8,8 @@ ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
 ARG MAINTAINER="Andrea F. Daniele (afdaniele@ttic.edu)"
+ARG DESCRIPTION="Base image of any Duckietown software module. Based on ${OS_FAMILY}:${OS_DISTRO}."
+ARG ICON="square"
 
 # base image
 FROM ${ARCH}/${OS_FAMILY}:${OS_DISTRO}
@@ -20,25 +22,28 @@ ARG ROS_DISTRO
 ARG DISTRO
 ARG LAUNCHER
 ARG REPO_NAME
+ARG DESCRIPTION
 ARG MAINTAINER
-ARG DEBIAN_FRONTEND=noninteractive
+ARG ICON
 
 # setup environment
 ENV INITSYSTEM off
 ENV QEMU_EXECVE 1
-ENV TERM "xterm"
+ENV TERM xterm
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV READTHEDOCS True
 ENV PYTHONIOENCODING UTF-8
 ENV DISABLE_CONTRACTS 1
-ENV TZ=America/New_York
+ENV DEBIAN_FRONTEND noninteractive
 
 # keep some arguments as environment variables
 ENV OS_FAMILY "${OS_FAMILY}"
 ENV OS_DISTRO "${OS_DISTRO}"
 ENV ROS_DISTRO "${ROS_DISTRO}"
 ENV DT_MODULE_TYPE "${REPO_NAME}"
+ENV DT_MODULE_DESCRIPTION "${DESCRIPTION}"
+ENV DT_MODULE_ICON "${ICON}"
 ENV DT_MAINTAINER "${MAINTAINER}"
 ENV DT_LAUNCHER "${LAUNCHER}"
 
@@ -52,6 +57,9 @@ WORKDIR "${SOURCE_DIR}"
 
 # copy QEMU
 COPY ./assets/qemu/${ARCH}/ /usr/bin/
+
+# copy binaries
+COPY ./assets/bin/. /usr/local/bin/
 
 # define and create repository paths
 ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
@@ -73,40 +81,12 @@ RUN apt-key adv \
     --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
 
-# add python3.7 sources to APT
-#TODO: this can go once we move to Focal
-#RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
-#RUN echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
-#RUN gpg --keyserver keyserver.ubuntu.com --recv 6A755776 \
-# && gpg --export --armor 6A755776 | apt-key add -
-
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    $(awk -F: '/^[^#]/ { print $1 }' "${REPO_PATH}/dependencies-apt.txt" | uniq) \
-  && rm -rf /var/lib/apt/lists/*
+RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 
 # upgrade PIP
 RUN pip3 install -U pip
-
-# install dependencies (PIP)
-# Note: Those were moved to python3 and updated to newer version
-# COPY ./dependencies-py.txt "${REPO_PATH}/"
-# RUN pip3 install -r "${REPO_PATH}/dependencies-py.txt"
-
-# update alternatives for python, python3
-#TODO: this can go once we move to Focal
-#RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
-
-# install pip3
-#TODO: this can go once we move to Focal
-#RUN cd /tmp \
-#  && wget --no-check-certificate http://bootstrap.pypa.io/get-pip.py \
-#  && python3 ./get-pip.py \
-#  && rm ./get-pip.py
-## remove the newly installed binary pip shadowing the Python2 pip
-#RUN rm /usr/local/bin/pip
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
@@ -121,12 +101,9 @@ ENV PATH=/opt/vc/bin:${PATH}
 # copy the source code
 COPY ./packages/. "${REPO_PATH}/"
 
-# copy binaries
-COPY ./assets/bin/. /usr/local/bin/
-
 # define healthcheck
-RUN echo ND > /status
-RUN chmod 777 /status
+RUN echo ND > /health
+RUN chmod 777 /health
 HEALTHCHECK \
     --interval=5s \
     CMD cat /health && grep -q ^healthy$ /health
@@ -145,8 +122,10 @@ RUN dt-install-launchers "${LAUNCH_PATH}"
 CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
 
 # store module metadata
-LABEL org.duckietown.label.architecture="${ARCH}" \
-    org.duckietown.label.module.type="${REPO_NAME}" \
+LABEL org.duckietown.label.module.type="${REPO_NAME}" \
+    org.duckietown.label.module.description="${DESCRIPTION}" \
+    org.duckietown.label.module.icon="${ICON}" \
+    org.duckietown.label.architecture="${ARCH}" \
     org.duckietown.label.code.location="${REPO_PATH}" \
     org.duckietown.label.code.version.distro="${DISTRO}" \
     org.duckietown.label.base.image="${OS_FAMILY}" \
