@@ -85,6 +85,20 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 
+# To fix CMake issue, we need to rebuild for arm
+SHELL ["/bin/bash", "-c"]
+RUN if [ "$ARCH" == "arm32v7" ]; \
+    then \
+      export CFLAGS="-D_FILE_OFFSET_BITS=64" && \
+      export CXXFLAGS="-D_FILE_OFFSET_BITS=64" && \
+      mkdir cmake && \
+      git clone https://gitlab.kitware.com/cmake/cmake.git cmake && \
+      cd cmake && \
+      ./bootstrap && \
+      make && \
+      make install; \
+    fi 
+
 # upgrade PIP
 RUN pip3 install -U pip
 

@@ -2,6 +2,7 @@
 
 # development tools & libraries
 build-essential
+git
 vim
 wget
 sudo
@@ -15,6 +16,7 @@ libturbojpeg
 libblas-dev
 liblapack-dev
 libatlas-base-dev
+libssl-dev
 
 # Python dependencies
 python3-pip
