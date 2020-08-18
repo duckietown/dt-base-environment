@@ -3,7 +3,7 @@ ARG ARCH=arm32v7
 ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
-ARG DISTRO=daffy
+ARG DISTRO=ente
 ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
