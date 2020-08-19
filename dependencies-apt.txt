@@ -29,6 +29,7 @@ python3-bs4
 python3-catkin-tools
 python3-pymongo
 python3-scipy
+python3-numpy
 # Following required to be installed through apt
 # throws freetype error on install through pip
 python3-matplotlib
