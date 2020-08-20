@@ -3,7 +3,7 @@ ARG ARCH=arm32v7
 ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
-ARG DISTRO=ente
+ARG DISTRO=daffy
 ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
@@ -70,7 +70,6 @@ ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 
 # Install gnupg required for apt-key (not in base image since Focal)
-# TODO we should find a fix to make it cleaner / inside dep-apt.txt
 RUN apt-get update \
   && apt-get install -y --no-install-recommends gnupg \
   && rm -rf /var/lib/apt/lists/*
@@ -96,7 +95,9 @@ RUN if [ "$ARCH" == "arm32v7" ]; \
       cd cmake && \
       ./bootstrap && \
       make && \
-      make install; \
+      make install && \
+      cd ../ && \
+      rm -rf cmake; \
     fi 
 
 # upgrade PIP
