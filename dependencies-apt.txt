@@ -1,7 +1,9 @@
 # LIST YOUR APT PACKAGES HERE
 
 # development tools & libraries
-gcc
+build-essential
+git
+vim
 wget
 sudo
 nano
@@ -14,26 +16,30 @@ libturbojpeg
 libblas-dev
 liblapack-dev
 libatlas-base-dev
+libssl-dev
 
 # Python dependencies
-python-pip
-python-wheel
-python-smbus
-python-termcolor
-python-tables
-python-lxml
-python-bs4
-python-catkin-tools
-python-pymongo
+python3-pip
+python3-dev
+python3-wheel
+python3-smbus
+python3-termcolor
+python3-tables
+python3-lxml
+python3-bs4
+python3-catkin-tools
+python3-pymongo
+python3-scipy
+python3-numpy
 
-# Python3 dependencies
-python3.7
-python3.7-dev
+# Following required to be installed through apt
+# throws freetype error on install through pip
+python3-matplotlib
 
 # ROS packages
-ros-kinetic-rospy
-ros-kinetic-robot
-ros-kinetic-cv-bridge
+ros-noetic-rospy
+ros-noetic-robot
+ros-noetic-cv-bridge
 
 # this is for dt-advertise
 avahi-utils
@@ -44,7 +50,7 @@ libnss-mdns
 # these are required to build `matplotlib` on Arm
 libfreetype6-dev
 pkg-config
-libpng12-dev
+libpng-dev
 g++
 
 # these are required to build `Pillow` on Arm

@@ -1,8 +1,8 @@
 # parameters
 ARG ARCH=arm32v7
-ARG ROS_DISTRO=kinetic
+ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
-ARG OS_DISTRO=xenial
+ARG OS_DISTRO=focal
 ARG DISTRO=daffy
 ARG LAUNCHER=default
 # ---
@@ -69,42 +69,39 @@ RUN mkdir -p "${LAUNCH_PATH}"
 ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 
+# Install gnupg required for apt-key (not in base image since Focal)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends gnupg \
+  && rm -rf /var/lib/apt/lists/*
+
 # setup ROS sources
 RUN apt-key adv \
     --keyserver hkp://keyserver.ubuntu.com:80 \
     --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
 
-# add python3.7 sources to APT
-#TODO: this can go once we move to Focal
-RUN echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
-RUN echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
-RUN gpg --keyserver keyserver.ubuntu.com --recv 6A755776 \
- && gpg --export --armor 6A755776 | apt-key add -
-
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 
+# To fix CMake issue, we need to rebuild for arm
+SHELL ["/bin/bash", "-c"]
+RUN if [ "$ARCH" == "arm32v7" ]; \
+    then \
+      export CFLAGS="-D_FILE_OFFSET_BITS=64" && \
+      export CXXFLAGS="-D_FILE_OFFSET_BITS=64" && \
+      mkdir cmake && \
+      git clone https://gitlab.kitware.com/cmake/cmake.git cmake && \
+      cd cmake && \
+      ./bootstrap && \
+      make && \
+      make install && \
+      cd ../ && \
+      rm -rf cmake; \
+    fi 
+
 # upgrade PIP
-RUN pip install -U pip
-
-# install dependencies (PIP)
-COPY ./dependencies-py.txt "${REPO_PATH}/"
-RUN pip install -r "${REPO_PATH}/dependencies-py.txt"
-
-# update alternatives for python, python3
-#TODO: this can go once we move to Focal
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
-
-# install pip3
-#TODO: this can go once we move to Focal
-RUN cd /tmp \
-  && wget --no-check-certificate http://bootstrap.pypa.io/get-pip.py \
-  && python3 ./get-pip.py \
-  && rm ./get-pip.py
-# remove the newly installed binary pip shadowing the Python2 pip
-RUN rm /usr/local/bin/pip
+RUN pip3 install -U pip
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
@@ -130,7 +127,7 @@ HEALTHCHECK \
 RUN sed \
   -i \
   's/__default_terminal_width = 80/__default_terminal_width = 160/' \
-  /usr/lib/python2.7/dist-packages/catkin_tools/common.py
+  /usr/lib/python3/dist-packages/catkin_tools/common.py
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"
