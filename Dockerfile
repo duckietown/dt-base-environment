@@ -105,7 +105,7 @@ RUN pip3 install -U pip
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN pip3 install -r "${REPO_PATH}/dependencies-py3.txt"
+RUN pip3 install --use-feature=2020-resolver -r "${REPO_PATH}/dependencies-py3.txt"
 
 # install RPi libs
 ADD assets/vc.tgz /opt/
