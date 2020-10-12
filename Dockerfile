@@ -36,6 +36,9 @@ ENV READTHEDOCS True
 ENV PYTHONIOENCODING UTF-8
 ENV DISABLE_CONTRACTS 1
 ENV DEBIAN_FRONTEND noninteractive
+# nvidia runtime configuration
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES all
 
 # keep some arguments as environment variables
 ENV OS_FAMILY "${OS_FAMILY}"
