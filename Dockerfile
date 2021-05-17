@@ -111,9 +111,7 @@ COPY ./dependencies-py3.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r "${REPO_PATH}/dependencies-py3.txt"
 
 # install RPi libs
-ADD assets/vc.tgz /opt/
-COPY assets/00-vmcs.conf /etc/ld.so.conf.d
-RUN ldconfig
+COPY assets/vc.tgz /opt/
 ENV PATH=/opt/vc/bin:${PATH}
 
 # copy the source code
