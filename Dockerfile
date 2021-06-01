@@ -80,7 +80,7 @@ RUN apt-get update \
 # setup ROS sources
 RUN apt-key adv \
     --keyserver hkp://keyserver.ubuntu.com:80 \
-    --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+    --recv-keys F42ED6FBAB17C654
 RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
 
 # install dependencies (APT)
