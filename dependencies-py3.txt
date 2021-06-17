@@ -1,5 +1,4 @@
 # LIST YOUR PYTHON PACKAGES HERE
-pip==20.2.2
 setuptools
 wheel
 pyyaml
