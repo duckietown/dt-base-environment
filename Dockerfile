@@ -103,16 +103,16 @@ RUN if [ "$ARCH" == "arm32v7" ]; \
       rm -rf cmake; \
     fi
 
-# upgrade PIP
-RUN pip3 install -U pip
 
 # install dependencies (PIP3)
 ARG PIP_INDEX_URL
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
+# upgrade PIP
+RUN python3 -m pip install -U pip
 
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN pip3 install --use-feature=2020-resolver -r "${REPO_PATH}/dependencies-py3.txt"
+RUN python3 -m pip install --use-feature=2020-resolver -r "${REPO_PATH}/dependencies-py3.txt"
 
 # install RPi libs
 COPY assets/vc.tgz /opt/
