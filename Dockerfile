@@ -101,12 +101,16 @@ RUN if [ "$ARCH" == "arm32v7" ]; \
       make install && \
       cd ../ && \
       rm -rf cmake; \
-    fi 
+    fi
 
 # upgrade PIP
 RUN pip3 install -U pip
 
 # install dependencies (PIP3)
+ARG PIP_INDEX_URL
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
+
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r "${REPO_PATH}/dependencies-py3.txt"
 
