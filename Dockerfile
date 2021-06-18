@@ -105,7 +105,7 @@ RUN if [ "$ARCH" == "arm32v7" ]; \
 
 
 # install dependencies (PIP3)
-ARG PIP_INDEX_URL
+ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 # upgrade PIP
