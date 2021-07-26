@@ -3,6 +3,7 @@
 # development tools & libraries
 build-essential
 git
+git-lfs
 vim
 wget
 sudo
