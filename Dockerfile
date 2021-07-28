@@ -1,5 +1,5 @@
 # parameters
-ARG ARCH=arm32v7
+ARG ARCH=arm64v8
 ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
@@ -86,23 +86,6 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
-
-# To fix CMake issue, we need to rebuild for arm
-SHELL ["/bin/bash", "-c"]
-RUN if [ "$ARCH" == "arm32v7" ]; \
-    then \
-      export CFLAGS="-D_FILE_OFFSET_BITS=64" && \
-      export CXXFLAGS="-D_FILE_OFFSET_BITS=64" && \
-      mkdir cmake && \
-      git clone https://gitlab.kitware.com/cmake/cmake.git cmake && \
-      cd cmake && \
-      ./bootstrap && \
-      make && \
-      make install && \
-      cd ../ && \
-      rm -rf cmake; \
-    fi
-
 
 # install dependencies (PIP3)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
