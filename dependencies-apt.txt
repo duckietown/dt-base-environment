@@ -3,6 +3,7 @@
 # development tools & libraries
 build-essential
 git
+git-lfs
 vim
 wget
 sudo
@@ -20,6 +21,7 @@ libssl-dev
 
 # Python dependencies
 python3-pip
+python3-dev
 python3-wheel
 python3-smbus
 python3-termcolor
@@ -30,13 +32,10 @@ python3-catkin-tools
 python3-pymongo
 python3-scipy
 python3-numpy
+
 # Following required to be installed through apt
 # throws freetype error on install through pip
 python3-matplotlib
-
-# Python3 dependencies
-# python3.7
-# python3.7-dev
 
 # ROS packages
 ros-noetic-rospy
@@ -52,8 +51,6 @@ libnss-mdns
 # these are required to build `matplotlib` on Arm
 libfreetype6-dev
 pkg-config
-# Following was upgraded to 16 in focal
-# libpng12-dev
 libpng-dev
 g++
 

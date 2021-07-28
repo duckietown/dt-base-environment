@@ -3,7 +3,7 @@ ARG ARCH=arm32v7
 ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
-ARG DISTRO=ente
+ARG DISTRO=daffy
 ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
@@ -36,6 +36,9 @@ ENV READTHEDOCS True
 ENV PYTHONIOENCODING UTF-8
 ENV DISABLE_CONTRACTS 1
 ENV DEBIAN_FRONTEND noninteractive
+# nvidia runtime configuration
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES all
 
 # keep some arguments as environment variables
 ENV OS_FAMILY "${OS_FAMILY}"
@@ -70,7 +73,6 @@ ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 
 # Install gnupg required for apt-key (not in base image since Focal)
-# TODO we should find a fix to make it cleaner / inside dep-apt.txt
 RUN apt-get update \
   && apt-get install -y --no-install-recommends gnupg \
   && rm -rf /var/lib/apt/lists/*
@@ -78,7 +80,7 @@ RUN apt-get update \
 # setup ROS sources
 RUN apt-key adv \
     --keyserver hkp://keyserver.ubuntu.com:80 \
-    --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+    --recv-keys F42ED6FBAB17C654
 RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list
 
 # install dependencies (APT)
@@ -96,20 +98,24 @@ RUN if [ "$ARCH" == "arm32v7" ]; \
       cd cmake && \
       ./bootstrap && \
       make && \
-      make install; \
-    fi 
+      make install && \
+      cd ../ && \
+      rm -rf cmake; \
+    fi
 
-# upgrade PIP
-RUN pip3 install -U pip
 
 # install dependencies (PIP3)
+ARG PIP_INDEX_URL="https://pypi.org/simple"
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
+# upgrade PIP
+RUN python3 -m pip install -U pip
+
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN pip3 install -r "${REPO_PATH}/dependencies-py3.txt"
+RUN python3 -m pip install --use-feature=2020-resolver -r "${REPO_PATH}/dependencies-py3.txt"
 
 # install RPi libs
-ADD assets/vc.tgz /opt/
-COPY assets/00-vmcs.conf /etc/ld.so.conf.d
-RUN ldconfig
+COPY assets/vc.tgz /opt/
 ENV PATH=/opt/vc/bin:${PATH}
 
 # copy the source code
