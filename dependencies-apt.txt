@@ -4,6 +4,7 @@
 build-essential
 apt-utils
 git
+git-lfs
 vim
 wget
 sudo
