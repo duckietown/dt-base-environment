@@ -89,6 +89,7 @@ RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 
 # To fix CMake issue, we need to rebuild for arm
 SHELL ["/bin/bash", "-c"]
+ARG NCPUS=2
 RUN if [ "$ARCH" == "arm32v7" ]; \
     then \
       export CFLAGS="-D_FILE_OFFSET_BITS=64" && \
@@ -97,7 +98,7 @@ RUN if [ "$ARCH" == "arm32v7" ]; \
       git clone https://gitlab.kitware.com/cmake/cmake.git cmake && \
       cd cmake && \
       ./bootstrap && \
-      make && \
+      make -j${NCPUS} && \
       make install && \
       cd ../ && \
       rm -rf cmake; \
