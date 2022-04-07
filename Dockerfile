@@ -1,9 +1,9 @@
 # parameters
-ARG ARCH=arm32v7
+ARG ARCH=arm64v8
 ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
-ARG DISTRO=daffy
+ARG DISTRO=ente
 ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
@@ -87,25 +87,7 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 
-# To fix CMake issue, we need to rebuild for arm
-SHELL ["/bin/bash", "-c"]
-ARG NCPUS=2
-RUN if [ "$ARCH" == "arm32v7" ]; \
-    then \
-      export CFLAGS="-D_FILE_OFFSET_BITS=64" && \
-      export CXXFLAGS="-D_FILE_OFFSET_BITS=64" && \
-      mkdir cmake && \
-      git clone https://gitlab.kitware.com/cmake/cmake.git cmake && \
-      cd cmake && \
-      ./bootstrap && \
-      make -j${NCPUS} && \
-      make install && \
-      cd ../ && \
-      rm -rf cmake; \
-    fi
-
-
-# install dependencies (python3 -m pip)
+# install dependencies (PIP3)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
