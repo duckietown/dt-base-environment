@@ -94,8 +94,8 @@ RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 # upgrade PIP
 RUN python3 -m pip install -U pip
 
-COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN python3 -m pip install --use-feature=2020-resolver -r "${REPO_PATH}/dependencies-py3.txt"
+COPY ./dependencies-py3.* "${REPO_PATH}/"
+RUN python3 -m pip install  -r "${REPO_PATH}/dependencies-py3.txt"
 
 # install RPi libs
 COPY assets/vc.tgz /opt/

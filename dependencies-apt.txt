@@ -2,6 +2,7 @@
 
 # development tools & libraries
 build-essential
+apt-utils
 git
 git-lfs
 vim
