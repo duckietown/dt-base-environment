@@ -99,10 +99,6 @@ RUN python3 -m pip install -U pip
 COPY ./dependencies-py3.* "${REPO_PATH}/"
 RUN python3 -m pip install  -r "${REPO_PATH}/dependencies-py3.txt"
 
-# install RPi libs
-COPY assets/vc.tgz /opt/
-ENV PATH=/opt/vc/bin:${PATH}
-
 # copy the source code
 COPY ./packages/. "${REPO_PATH}/"
 
