@@ -95,7 +95,7 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 
 # upgrade PIP
-RUN python3 -m pip install -U pip
+RUN python3 -m pip install pip==22.2
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.* "${REPO_PATH}/"
@@ -111,11 +111,8 @@ HEALTHCHECK \
     --interval=5s \
     CMD cat /health && grep -q ^healthy$ /health
 
-# configure catkin to work nicely with docker
-RUN sed \
-  -i \
-  's/__default_terminal_width = 80/__default_terminal_width = 160/' \
-  /usr/lib/python3/dist-packages/catkin_tools/common.py
+# configure catkin to work nicely with docker: https://docs.python.org/3/library/shutil.html#shutil.get_terminal_size
+ENV COLUMNS 160
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"
