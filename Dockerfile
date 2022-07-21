@@ -89,13 +89,15 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 
-# install dependencies (PIP3)
+# configure PIP
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
+
 # upgrade PIP
 RUN python3 -m pip install -U pip
 
+# install dependencies (PIP3)
 COPY ./dependencies-py3.* "${REPO_PATH}/"
 RUN python3 -m pip install  -r "${REPO_PATH}/dependencies-py3.txt"
 
