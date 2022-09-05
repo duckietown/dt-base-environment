@@ -1,5 +1,4 @@
 # parameters
-ARG ARCH=arm32v7
 ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
 ARG OS_DISTRO=focal
@@ -12,10 +11,9 @@ ARG DESCRIPTION="Base image of any Duckietown software module. Based on ${OS_FAM
 ARG ICON="square"
 
 # base image
-FROM ${ARCH}/${OS_FAMILY}:${OS_DISTRO}
+FROM ${OS_FAMILY}:${OS_DISTRO}
 
 # recall all arguments
-ARG ARCH
 ARG OS_FAMILY
 ARG OS_DISTRO
 ARG ROS_DISTRO
@@ -25,6 +23,11 @@ ARG REPO_NAME
 ARG DESCRIPTION
 ARG MAINTAINER
 ARG ICON
+# - buildkit
+ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
 
 # setup environment
 ENV INITSYSTEM off
@@ -59,7 +62,7 @@ ENV LAUNCH_DIR /launch
 WORKDIR "${SOURCE_DIR}"
 
 # copy QEMU
-COPY ./assets/qemu/${ARCH}/ /usr/bin/
+COPY ./assets/qemu/${TARGETPLATFORM}/ /usr/bin/
 
 # copy binaries
 COPY ./assets/bin/. /usr/local/bin/
@@ -90,7 +93,7 @@ RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
 # To fix CMake issue, we need to rebuild for arm
 SHELL ["/bin/bash", "-c"]
 ARG NCPUS=2
-RUN if [ "$ARCH" == "arm32v7" ]; \
+RUN if [ "$TARGETPLATFORM" == "linux/arm/v7" ]; \
     then \
       export CFLAGS="-D_FILE_OFFSET_BITS=64" && \
       export CXXFLAGS="-D_FILE_OFFSET_BITS=64" && \
@@ -123,8 +126,8 @@ ENV PATH=/opt/vc/bin:${PATH}
 COPY ./packages/. "${REPO_PATH}/"
 
 # define healthcheck
-RUN echo ND > /health
-RUN chmod 777 /health
+RUN echo ND > /health && \
+    chmod 777 /health
 HEALTHCHECK \
     --interval=5s \
     CMD cat /health && grep -q ^healthy$ /health
@@ -146,7 +149,9 @@ CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
 LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.module.description="${DESCRIPTION}" \
     org.duckietown.label.module.icon="${ICON}" \
-    org.duckietown.label.architecture="${ARCH}" \
+    org.duckietown.label.platform.os="${TARGETOS}" \
+    org.duckietown.label.platform.architecture="${TARGETARCH}" \
+    org.duckietown.label.platform.variant="${TARGETVARIANT}" \
     org.duckietown.label.code.location="${REPO_PATH}" \
     org.duckietown.label.code.version.distro="${DISTRO}" \
     org.duckietown.label.base.image="${OS_FAMILY}" \
