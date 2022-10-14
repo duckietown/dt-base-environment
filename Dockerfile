@@ -107,7 +107,6 @@ RUN if [ "$TARGETPLATFORM" == "linux/arm/v7" ]; \
       rm -rf cmake; \
     fi
 
-
 # install dependencies (python3 -m pip)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
