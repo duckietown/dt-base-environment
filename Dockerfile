@@ -72,10 +72,9 @@ COPY ./assets/bin/. /usr/local/bin/
 # define and create repository paths
 ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
 ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
-RUN mkdir -p "${REPO_PATH}"
-RUN mkdir -p "${LAUNCH_PATH}"
-ENV DT_REPO_PATH "${REPO_PATH}"
-ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
+RUN mkdir -p "${REPO_PATH}" "${LAUNCH_PATH}" "${USER_WS_DIR}"
+ENV DT_REPO_PATH="${REPO_PATH}" \
+    DT_LAUNCH_PATH="${LAUNCH_PATH}"
 
 # Install gnupg required for apt-key (not in base image since Focal)
 RUN apt-get update \
@@ -85,8 +84,8 @@ RUN apt-get update \
 # setup ROS sources
 RUN apt-key adv \
     --keyserver hkp://keyserver.ubuntu.com:80 \
-    --recv-keys F42ED6FBAB17C654
-RUN echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list.d/ros.list
+    --recv-keys F42ED6FBAB17C654 \
+    && echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list.d/ros.list
 
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
