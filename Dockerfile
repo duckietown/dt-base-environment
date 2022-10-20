@@ -30,35 +30,37 @@ ARG TARGETARCH
 ARG TARGETVARIANT
 
 # setup environment
-ENV INITSYSTEM off
-ENV QEMU_EXECVE 1
-ENV TERM xterm
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
-ENV READTHEDOCS True
-ENV PYTHONIOENCODING UTF-8
-ENV DISABLE_CONTRACTS 1
-ENV DEBIAN_FRONTEND noninteractive
+ENV INITSYSTEM="off" \
+    TERM="xterm" \
+    LANG="C.UTF-8" \
+    LC_ALL="C.UTF-8" \
+    READTHEDOCS="True" \
+    PYTHONIOENCODING="UTF-8" \
+    PYTHONUNBUFFERED="1" \
+    DEBIAN_FRONTEND="noninteractive" \
+    DISABLE_CONTRACTS=1 \
+    QEMU_EXECVE=1
 # nvidia runtime configuration
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES all
+ENV NVIDIA_VISIBLE_DEVICES="all" \
+    NVIDIA_DRIVER_CAPABILITIES="all"
 
 # keep some arguments as environment variables
-ENV OS_FAMILY "${OS_FAMILY}"
-ENV OS_DISTRO "${OS_DISTRO}"
-ENV ROS_DISTRO "${ROS_DISTRO}"
-ENV DT_MODULE_TYPE "${REPO_NAME}"
-ENV DT_MODULE_DESCRIPTION "${DESCRIPTION}"
-ENV DT_MODULE_ICON "${ICON}"
-ENV DT_MAINTAINER "${MAINTAINER}"
-ENV DT_LAUNCHER "${LAUNCHER}"
+ENV OS_FAMILY="${OS_FAMILY}" \
+    OS_DISTRO="${OS_DISTRO}" \
+    ROS_DISTRO="${ROS_DISTRO}" \
+    DT_MODULE_TYPE="${REPO_NAME}" \
+    DT_MODULE_DESCRIPTION="${DESCRIPTION}" \
+    DT_MODULE_ICON="${ICON}" \
+    DT_MAINTAINER="${MAINTAINER}" \
+    DT_LAUNCHER="${LAUNCHER}"
 
 # duckietown-specific settings
 ENV DUCKIEFLEET_ROOT "/data/config"
 
 # code environment
-ENV SOURCE_DIR /code
-ENV LAUNCH_DIR /launch
+ENV SOURCE_DIR="/code" \
+    LAUNCH_DIR="/launch"
+ENV USER_WS_DIR "${SOURCE_DIR}/user_ws"
 WORKDIR "${SOURCE_DIR}"
 
 # copy QEMU
@@ -111,8 +113,9 @@ RUN if [ "$TARGETPLATFORM" == "linux/arm/v7" ]; \
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
+
 # upgrade PIP
-RUN python3 -m pip install -U pip
+RUN python3 -m pip install pip==22.2
 
 COPY ./dependencies-py3.* "${REPO_PATH}/"
 RUN python3 -m pip install  -r "${REPO_PATH}/dependencies-py3.txt"
@@ -131,11 +134,8 @@ HEALTHCHECK \
     --interval=5s \
     CMD cat /health && grep -q ^healthy$ /health
 
-# configure catkin to work nicely with docker
-RUN sed \
-  -i \
-  's/__default_terminal_width = 80/__default_terminal_width = 160/' \
-  /usr/lib/python3/dist-packages/catkin_tools/common.py
+# configure catkin to work nicely with docker: https://docs.python.org/3/library/shutil.html#shutil.get_terminal_size
+ENV COLUMNS 160
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"
