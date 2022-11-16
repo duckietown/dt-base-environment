@@ -115,10 +115,12 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 
 # upgrade PIP
-RUN python3 -m pip install pip==22.2
+RUN python3 -m pip install pip==22.2 && \
+    ln -s $(which python3.8) /usr/bin/pip3.8
 
+# install dependencies (PIP3)
 COPY ./dependencies-py3.* "${REPO_PATH}/"
-RUN python3 -m pip install  -r "${REPO_PATH}/dependencies-py3.txt"
+RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.*"
 
 # install RPi libs
 COPY assets/vc.tgz /opt/
