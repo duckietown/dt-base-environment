@@ -39,7 +39,8 @@ ENV INITSYSTEM="off" \
     PYTHONUNBUFFERED="1" \
     DEBIAN_FRONTEND="noninteractive" \
     DISABLE_CONTRACTS=1 \
-    QEMU_EXECVE=1
+    QEMU_EXECVE=1 \
+    PIP_NO_CACHE_DIR=1
 # nvidia runtime configuration
 ENV NVIDIA_VISIBLE_DEVICES="all" \
     NVIDIA_DRIVER_CAPABILITIES="all"
