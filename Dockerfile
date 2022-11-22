@@ -40,7 +40,8 @@ ENV INITSYSTEM="off" \
     DEBIAN_FRONTEND="noninteractive" \
     DISABLE_CONTRACTS=1 \
     QEMU_EXECVE=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    PIP_ROOT_USER_ACTION=ignore
 # nvidia runtime configuration
 ENV NVIDIA_VISIBLE_DEVICES="all" \
     NVIDIA_DRIVER_CAPABILITIES="all"
