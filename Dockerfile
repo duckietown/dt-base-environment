@@ -61,7 +61,8 @@ ENV DUCKIEFLEET_ROOT "/data/config"
 
 # code environment
 ENV SOURCE_DIR="/code" \
-    LAUNCH_DIR="/launch"
+    LAUNCH_DIR="/launch" \
+    CATKIN_WS_DIR="/code/catkin_ws"
 ENV USER_WS_DIR "${SOURCE_DIR}/user_ws"
 WORKDIR "${SOURCE_DIR}"
 
@@ -74,7 +75,7 @@ COPY ./assets/bin/. /usr/local/bin/
 # define and create repository paths
 ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
 ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
-RUN mkdir -p "${REPO_PATH}" "${LAUNCH_PATH}" "${USER_WS_DIR}"
+RUN mkdir -p "${CATKIN_WS_DIR}" "${REPO_PATH}" "${LAUNCH_PATH}" "${USER_WS_DIR}"
 ENV DT_REPO_PATH="${REPO_PATH}" \
     DT_LAUNCH_PATH="${LAUNCH_PATH}"
 
