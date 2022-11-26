@@ -6,7 +6,7 @@ ARG DISTRO=daffy
 ARG LAUNCHER=default
 # ---
 ARG REPO_NAME="dt-base-environment"
-ARG MAINTAINER="Andrea F. Daniele (afdaniele@ttic.edu)"
+ARG MAINTAINER="Andrea F. Daniele (afdaniele@duckietown.com)"
 ARG DESCRIPTION="Base image of any Duckietown software module. Based on ${OS_FAMILY}:${OS_DISTRO}."
 ARG ICON="square"
 
