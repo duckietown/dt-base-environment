@@ -1,7 +1,7 @@
 # LIST YOUR PYTHON PACKAGES HERE
-networkx==2.4
-Pillow==7.2.0
-kiwisolver==1.2.0
+networkx
+Pillow
+kiwisolver
 PyTurboJPEG
 pipdeptree
 
