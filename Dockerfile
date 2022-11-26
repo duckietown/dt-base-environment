@@ -115,7 +115,6 @@ RUN if [ "$TARGETPLATFORM" == "linux/arm/v7" ]; \
 # install dependencies (python3 -m pip)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
-RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 
 # upgrade PIP
 RUN python3 -m pip install pip==22.2 && \

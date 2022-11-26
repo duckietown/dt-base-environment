@@ -1,4 +1,6 @@
 # LIST YOUR PYTHON PACKAGES HERE
+# NOTE: only place non-Duckietown libraries here; pin versions only if necessary
+
 networkx
 Pillow
 kiwisolver
