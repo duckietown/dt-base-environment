@@ -2,6 +2,7 @@
 
 # development tools & libraries
 build-essential
+apt-utils
 git
 git-lfs
 vim
@@ -33,8 +34,7 @@ python3-pymongo
 python3-scipy
 python3-numpy
 
-# Following required to be installed through apt
-# throws freetype error on install through pip
+# Following required to be installed through apt throws freetype error on install through pip
 python3-matplotlib
 
 # ROS packages

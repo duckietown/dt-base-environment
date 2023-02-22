@@ -1,9 +1,11 @@
 # LIST YOUR PYTHON PACKAGES HERE
-setuptools
-wheel
-pyyaml
-psutil
-networkx==2.4
-Pillow==7.2.0
-kiwisolver==1.2.0
+# NOTE: only place non-Duckietown libraries here; pin versions only if necessary
+
+networkx
+Pillow
+kiwisolver
 PyTurboJPEG
+pipdeptree
+
+# this is required by catkin (not sure why it is missing)
+osrf-pycommon>0.1.1
