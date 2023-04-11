@@ -108,10 +108,6 @@ RUN python3 -m pip install pip==22.2 && \
 COPY ./dependencies-py3.* "${REPO_PATH}/"
 RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.*"
 
-# install RPi libs
-COPY assets/vc.tgz /opt/
-ENV PATH=/opt/vc/bin:${PATH}
-
 # copy the source code
 COPY ./packages/. "${REPO_PATH}/"
 
