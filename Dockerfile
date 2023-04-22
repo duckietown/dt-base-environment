@@ -58,9 +58,6 @@ ENV OS_FAMILY="${OS_FAMILY}" \
     DT_MAINTAINER="${MAINTAINER}" \
     DT_LAUNCHER="${LAUNCHER}"
 
-# duckietown-specific settings
-ENV DUCKIEFLEET_ROOT "/data/config"
-
 # code environment
 ENV SOURCE_DIR="/code" \
     LAUNCH_DIR="/launch" \
@@ -110,13 +107,6 @@ RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.*"
 
 # copy the source code
 COPY ./packages/. "${REPO_PATH}/"
-
-# define healthcheck
-RUN echo ND > /health && \
-    chmod 777 /health
-HEALTHCHECK \
-    --interval=5s \
-    CMD cat /health && grep -q ^healthy$ /health
 
 # configure catkin to work nicely with docker: https://docs.python.org/3/library/shutil.html#shutil.get_terminal_size
 ENV COLUMNS 160
