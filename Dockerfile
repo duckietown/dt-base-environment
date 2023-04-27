@@ -2,7 +2,7 @@
 ARG ARCH=arm64v8
 ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
-ARG OS_DISTRO=jammy
+ARG OS_DISTRO=focal
 ARG DISTRO=ente
 ARG LAUNCHER=default
 # ---
