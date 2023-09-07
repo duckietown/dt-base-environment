@@ -1,8 +1,7 @@
 # parameters
 ARG ARCH=arm64v8
-ARG ROS_DISTRO=noetic
 ARG OS_FAMILY=ubuntu
-ARG OS_DISTRO=focal
+ARG OS_DISTRO=jammy
 ARG DISTRO=ente
 ARG LAUNCHER=default
 # ---
@@ -17,7 +16,6 @@ FROM ${ARCH}/${OS_FAMILY}:${OS_DISTRO}
 # recall all arguments
 ARG OS_FAMILY
 ARG OS_DISTRO
-ARG ROS_DISTRO
 ARG DISTRO
 ARG LAUNCHER
 ARG REPO_NAME
@@ -36,6 +34,7 @@ ENV INITSYSTEM="off" \
     LANG="C.UTF-8" \
     LC_ALL="C.UTF-8" \
     READTHEDOCS="True" \
+    CATKIN_VERSION="0.8.10" \
     PYTHONIOENCODING="UTF-8" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED="1" \
@@ -44,6 +43,7 @@ ENV INITSYSTEM="off" \
     QEMU_EXECVE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_ROOT_USER_ACTION=ignore
+
 # nvidia runtime configuration
 ENV NVIDIA_VISIBLE_DEVICES="all" \
     NVIDIA_DRIVER_CAPABILITIES="all"
@@ -51,7 +51,6 @@ ENV NVIDIA_VISIBLE_DEVICES="all" \
 # keep some arguments as environment variables
 ENV OS_FAMILY="${OS_FAMILY}" \
     OS_DISTRO="${OS_DISTRO}" \
-    ROS_DISTRO="${ROS_DISTRO}" \
     DT_MODULE_TYPE="${REPO_NAME}" \
     DT_MODULE_DESCRIPTION="${DESCRIPTION}" \
     DT_MODULE_ICON="${ICON}" \
@@ -74,7 +73,7 @@ COPY ./assets/bin/. /usr/local/bin/
 # define and create repository paths
 ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
 ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
-RUN mkdir -p "${CATKIN_WS_DIR}" "${REPO_PATH}" "${LAUNCH_PATH}" "${USER_WS_DIR}"
+RUN mkdir -p "${CATKIN_WS_DIR}/src/${REPO_NAME}/packages" "${REPO_PATH}" "${LAUNCH_PATH}" "${USER_WS_DIR}"
 ENV DT_REPO_PATH="${REPO_PATH}" \
     DT_LAUNCH_PATH="${LAUNCH_PATH}"
 
@@ -82,12 +81,6 @@ ENV DT_REPO_PATH="${REPO_PATH}" \
 RUN apt-get update \
   && apt-get install -y --no-install-recommends gnupg \
   && rm -rf /var/lib/apt/lists/*
-
-# setup ROS sources
-RUN apt-key adv \
-    --keyserver hkp://keyserver.ubuntu.com:80 \
-    --recv-keys F42ED6FBAB17C654 \
-    && echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list.d/ros.list
 
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
@@ -98,18 +91,31 @@ ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 
 # upgrade PIP
-RUN python3 -m pip install pip==22.2 && \
-    ln -s $(which python3.8) /usr/bin/pip3.8
+RUN python3 -m pip install pip==23.2
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.* "${REPO_PATH}/"
 RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.*"
 
+# copy the assets (needed by sibling images)
+COPY ./assets "${REPO_PATH}/assets"
+
 # copy the source code
-COPY ./packages/. "${REPO_PATH}/"
+COPY ./packages "${REPO_PATH}/packages"
+
+# install catkin package (needed when catkin is not provided by an existing catkin workspace)
+RUN cd /tmp/ && \
+    wget --no-check-certificate \
+        https://github.com/ros/catkin/archive/refs/tags/${CATKIN_VERSION}.zip && \
+    unzip ${CATKIN_VERSION}.zip -d "${CATKIN_WS_DIR}/src/${REPO_NAME}/packages/" && \
+    rm ${CATKIN_VERSION}.zip
 
 # configure catkin to work nicely with docker: https://docs.python.org/3/library/shutil.html#shutil.get_terminal_size
 ENV COLUMNS 160
+
+# build packages
+RUN catkin build \
+    --workspace ${CATKIN_WS_DIR}/
 
 # install launcher scripts
 COPY ./launchers/default.sh "${LAUNCH_PATH}/"

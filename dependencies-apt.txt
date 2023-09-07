@@ -5,10 +5,13 @@ build-essential
 apt-utils
 git
 git-lfs
+unzip
 vim
 wget
 sudo
 nano
+make
+cmake
 locales
 locales-all
 i2c-tools
@@ -23,24 +26,6 @@ libssl-dev
 # Python dependencies
 python3-pip
 python3-dev
-python3-wheel
-python3-smbus
-python3-termcolor
-python3-tables
-python3-lxml
-python3-bs4
-python3-catkin-tools
-python3-pymongo
-python3-scipy
-python3-numpy
-
-# Following required to be installed through apt throws freetype error on install through pip
-python3-matplotlib
-
-# ROS packages
-ros-noetic-rospy
-ros-noetic-robot
-ros-noetic-cv-bridge
 
 # this is for dt-advertise
 avahi-utils

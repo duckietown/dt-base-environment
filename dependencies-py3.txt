@@ -1,11 +1,26 @@
 # LIST YOUR PYTHON PACKAGES HERE
 # NOTE: only place non-Duckietown libraries here; pin versions only if necessary
 
+# catkin build system
+catkin-tools
+
+# these are required by catkin
+osrf-pycommon>0.1.1
+empy
+
+# commonly used libraries
+wheel
+smbus
+termcolor
+tables
+lxml
+bs4
+pymongo
+scipy
+numpy
 networkx
 Pillow
 kiwisolver
 PyTurboJPEG
 pipdeptree
-
-# this is required by catkin (not sure why it is missing)
-osrf-pycommon>0.1.1
+matplotlib
