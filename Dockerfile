@@ -1,27 +1,30 @@
 # parameters
-ARG ARCH=arm64v8
-ARG OS_FAMILY=ubuntu
-ARG OS_DISTRO=jammy
-ARG DISTRO=ente
+ARG ARCH
+ARG DISTRO
+ARG BASE_REPOSITORY=ubuntu
+ARG BASE_TAG=jammy
 ARG LAUNCHER=default
 # ---
-ARG REPO_NAME="dt-base-environment"
-ARG MAINTAINER="Andrea F. Daniele (afdaniele@duckietown.com)"
-ARG DESCRIPTION="Base image of any Duckietown software module. Based on ${OS_FAMILY}:${OS_DISTRO}."
-ARG ICON="square"
+ARG PROJECT_NAME="dt-base-environment"
+ARG PROJECT_MAINTAINER="Andrea F. Daniele (afdaniele@duckietown.com)"
+ARG PROJECT_DESCRIPTION="Base image of any Duckietown software module. Based on ${BASE_REPOSITORY}:${BASE_TAG}."
+ARG PROJECT_ICON="square"
+ARG PROJECT_FORMAT_VERSION
 
 # base image
-FROM ${ARCH}/${OS_FAMILY}:${OS_DISTRO}
+FROM docker.io/${ARCH}/${BASE_REPOSITORY}:${BASE_TAG}
 
 # recall all arguments
-ARG OS_FAMILY
-ARG OS_DISTRO
+ARG ARCH
+ARG BASE_REPOSITORY
+ARG BASE_TAG
 ARG DISTRO
 ARG LAUNCHER
-ARG REPO_NAME
-ARG DESCRIPTION
-ARG MAINTAINER
-ARG ICON
+ARG PROJECT_NAME
+ARG PROJECT_DESCRIPTION
+ARG PROJECT_MAINTAINER
+ARG PROJECT_ICON
+ARG PROJECT_FORMAT_VERSION
 # - buildkit
 ARG TARGETPLATFORM
 ARG TARGETOS
@@ -34,7 +37,6 @@ ENV INITSYSTEM="off" \
     LANG="C.UTF-8" \
     LC_ALL="C.UTF-8" \
     READTHEDOCS="True" \
-    CATKIN_VERSION="0.8.10" \
     PYTHONIOENCODING="UTF-8" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED="1" \
@@ -48,19 +50,16 @@ ENV INITSYSTEM="off" \
 ENV NVIDIA_VISIBLE_DEVICES="all" \
     NVIDIA_DRIVER_CAPABILITIES="all"
 
-# keep some arguments as environment variables
-ENV OS_FAMILY="${OS_FAMILY}" \
-    OS_DISTRO="${OS_DISTRO}" \
-    DT_MODULE_TYPE="${REPO_NAME}" \
-    DT_MODULE_DESCRIPTION="${DESCRIPTION}" \
-    DT_MODULE_ICON="${ICON}" \
-    DT_MAINTAINER="${MAINTAINER}" \
-    DT_LAUNCHER="${LAUNCHER}"
+# OS info
+ENV OS_FAMILY="${BASE_REPOSITORY}" \
+    OS_DISTRO="${BASE_TAG}"
 
 # code environment
 ENV SOURCE_DIR="/code" \
-    LAUNCH_DIR="/launch" \
-    CATKIN_WS_DIR="/code/catkin_ws"
+    LAUNCHERS_DIR="/launch" \
+    COLCON_WS_DIR="/code/catkin_ws" \
+    MINIMUM_DTPROJECT_FORMAT_VERSION="4"
+
 ENV USER_WS_DIR "${SOURCE_DIR}/user_ws"
 WORKDIR "${SOURCE_DIR}"
 
@@ -71,11 +70,18 @@ COPY ./assets/qemu/${TARGETPLATFORM}/ /usr/bin/
 COPY ./assets/bin/. /usr/local/bin/
 
 # define and create repository paths
-ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
-ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
-RUN mkdir -p "${CATKIN_WS_DIR}/src/${REPO_NAME}/packages" "${REPO_PATH}" "${LAUNCH_PATH}" "${USER_WS_DIR}"
-ENV DT_REPO_PATH="${REPO_PATH}" \
-    DT_LAUNCH_PATH="${LAUNCH_PATH}"
+ARG PROJECT_PATH="${SOURCE_DIR}/${PROJECT_NAME}"
+ARG PROJECT_LAUNCHERS_PATH="${LAUNCHERS_DIR}/${PROJECT_NAME}"
+RUN mkdir -p "${COLCON_WS_DIR}/src/${PROJECT_NAME}/packages" "${PROJECT_PATH}" "${PROJECT_LAUNCHERS_PATH}" "${USER_WS_DIR}"
+
+# keep some arguments as environment variables
+ENV DT_MODULE_TYPE="${PROJECT_NAME}" \
+    DT_MODULE_DESCRIPTION="${PROJECT_DESCRIPTION}" \
+    DT_MODULE_MAINTAINER="${PROJECT_MAINTAINER}" \
+    DT_MODULE_ICON="${PROJECT_ICON}" \
+    DT_MODULE_PATH="${PROJECT_PATH}" \
+    DT_MODULE_LAUNCHERS_PATH="${PROJECT_LAUNCHERS_PATH}" \
+    DT_LAUNCHER="${LAUNCHER}"
 
 # Install gnupg required for apt-key (not in base image since Focal)
 RUN apt-get update \
@@ -83,8 +89,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # install dependencies (APT)
-COPY ./dependencies-apt.txt "${REPO_PATH}/"
-RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
+COPY ./dependencies-apt.txt "${PROJECT_PATH}/"
+RUN dt-apt-install "${PROJECT_PATH}/dependencies-apt.txt"
 
 # install dependencies (PIP3)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
@@ -94,45 +100,61 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN python3 -m pip install pip==23.2
 
 # install dependencies (PIP3)
-COPY ./dependencies-py3.* "${REPO_PATH}/"
-RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.*"
+COPY ./dependencies-py3.* "${PROJECT_PATH}/"
+RUN dt-pip3-install "${PROJECT_PATH}/dependencies-py3.*"
+
+# check build arguments
+RUN dt-args-check \
+    "ARCH" "${ARCH}" \
+    "DISTRO" "${DISTRO}" \
+    "PROJECT_FORMAT_VERSION" "${PROJECT_FORMAT_VERSION}"
+RUN dt-check-project-format "${PROJECT_FORMAT_VERSION}"
 
 # copy the assets (needed by sibling images)
-COPY ./assets "${REPO_PATH}/assets"
+COPY ./assets "${PROJECT_PATH}/assets"
 
 # copy the source code
-COPY ./packages "${REPO_PATH}/packages"
+COPY ./packages "${PROJECT_PATH}/packages"
 
-# install catkin package (needed when catkin is not provided by an existing catkin workspace)
-RUN cd /tmp/ && \
-    wget --no-check-certificate \
-        https://github.com/ros/catkin/archive/refs/tags/${CATKIN_VERSION}.zip && \
-    unzip ${CATKIN_VERSION}.zip -d "${CATKIN_WS_DIR}/src/${REPO_NAME}/packages/" && \
-    rm ${CATKIN_VERSION}.zip
-
-# configure catkin to work nicely with docker: https://docs.python.org/3/library/shutil.html#shutil.get_terminal_size
+# configure terminal size in docker: https://docs.python.org/3/library/shutil.html#shutil.get_terminal_size
 ENV COLUMNS 160
 
-# build packages
-RUN catkin build \
-    --workspace ${CATKIN_WS_DIR}/
-
 # install launcher scripts
-COPY ./launchers/default.sh "${LAUNCH_PATH}/"
-RUN dt-install-launchers "${LAUNCH_PATH}"
+COPY ./launchers/default.sh "${PROJECT_LAUNCHERS_PATH}/"
+RUN dt-install-launchers "${PROJECT_LAUNCHERS_PATH}"
 
 # define default command
 CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
 
 # store module metadata
-LABEL org.duckietown.label.module.type="${REPO_NAME}" \
-    org.duckietown.label.module.description="${DESCRIPTION}" \
-    org.duckietown.label.module.icon="${ICON}" \
+LABEL \
+    # module info
+    org.duckietown.label.module.name="${PROJECT_NAME}" \
+    org.duckietown.label.module.description="${PROJECT_DESCRIPTION}" \
+    org.duckietown.label.module.maintainer="${PROJECT_MAINTAINER}" \
+    org.duckietown.label.module.icon="${PROJECT_ICON}" \
+    org.duckietown.label.module.path="${PROJECT_PATH}" \
+    org.duckietown.label.module.launchers.path="${PROJECT_LAUNCHERS_PATH}" \
+    # format
+    org.duckietown.label.format.version="${PROJECT_FORMAT_VERSION}" \
+    # platform info
     org.duckietown.label.platform.os="${TARGETOS}" \
     org.duckietown.label.platform.architecture="${TARGETARCH}" \
     org.duckietown.label.platform.variant="${TARGETVARIANT}" \
-    org.duckietown.label.code.location="${REPO_PATH}" \
-    org.duckietown.label.code.version.distro="${DISTRO}" \
-    org.duckietown.label.base.image="${OS_FAMILY}" \
-    org.duckietown.label.base.tag="${OS_DISTRO}" \
-    org.duckietown.label.maintainer="${MAINTAINER}"
+    # code info
+    org.duckietown.label.code.distro="${DISTRO}" \
+    org.duckietown.label.code.launcher="${LAUNCHER}" \
+    org.duckietown.label.code.python.registry="${PIP_INDEX_URL}" \
+    # base info
+    org.duckietown.label.base.organization="${ARCH}" \
+    org.duckietown.label.base.repository="${BASE_REPOSITORY}" \
+    org.duckietown.label.base.tag="${BASE_TAG}"
+
+# install packages
+RUN dt-git-install-package "ros2/launch" 3.1.0 && \
+    dt-git-install-package "ros2/python_cmake_module" 0.11.0 && \
+    dt-git-install-package "ament/ament_index" 1.7.0
+
+# build packages
+RUN cd ${COLCON_WS_DIR} && \
+    colcon build

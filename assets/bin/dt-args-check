@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# The inputs to this script is a list of strings of even number so that the name of an argument is passed
+# The input to this script is a list of strings of even number so that the name of an argument is passed
 # right before its value. For example,
 #
 #

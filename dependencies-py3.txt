@@ -1,13 +1,6 @@
 # LIST YOUR PYTHON PACKAGES HERE
 # NOTE: only place non-Duckietown libraries here; pin versions only if necessary
 
-# catkin build system
-catkin-tools
-
-# these are required by catkin
-osrf-pycommon>0.1.1
-empy
-
 # commonly used libraries
 wheel
 smbus
@@ -24,3 +17,11 @@ kiwisolver
 PyTurboJPEG
 pipdeptree
 matplotlib
+setuptools==58.2.0
+
+# colcon build system
+colcon-common-extensions
+
+# these are required by colcon
+osrf-pycommon
+lark

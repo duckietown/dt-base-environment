@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+# The input to this script is a project format number. The given number will be compared with the
+# minimum project format version baked into the base image to make sure that we are not building
+# project of an old format on top of new ones. Use it as,
+#
+#
+#       dt-check-project-format [options] -- [project_format]
+#
+#
+
+import os
+import argparse
+
+
+def main():
+    # parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("format", type=int, nargs=1, help="Format of the current project")
+    parsed = parser.parse_args()
+    # make sure the minimum project format is set
+    min_project_format: str = os.environ.get("MINIMUM_DTPROJECT_FORMAT_VERSION", None)
+    if min_project_format is None:
+        print(f"ERROR: Environment variable 'MINIMUM_DTPROJECT_FORMAT_VERSION' not set. This should not have "
+              f"appened. Reach out to the technical support.")
+        exit(1)
+    # make sure the minimum project format is an integer
+    try:
+        min_project_format: int = int(min_project_format)
+    except ValueError:
+        print(f"ERROR: Environment variable 'MINIMUM_DTPROJECT_FORMAT_VERSION' is set to "
+              f"'{min_project_format}'. This should not have appened. An integer was expected. "
+              f"Reach out to the technical support.")
+        exit(2)
+    # compare format versions
+    if parsed.format[0] < min_project_format:
+        print(f"FATAL: You are trying to build a DTProject of format v{parsed.format} on top of a base image "
+              f"that only supports DTProjects up to v{min_project_format}. Please, upgrade your base image.")
+        exit(3)
+    # ---
+    print("PASSED!")
+
+
+if __name__ == '__main__':
+    main()
