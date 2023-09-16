@@ -38,7 +38,7 @@ def main():
               f"that only supports DTProjects up to v{min_project_format}. Please, upgrade your base image.")
         exit(3)
     # ---
-    print("PASSED!")
+    print(f"PASSED! [{parsed.format[0]} >= {min_project_format}]")
 
 
 if __name__ == '__main__':
