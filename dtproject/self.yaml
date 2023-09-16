@@ -2,6 +2,6 @@ name: dt-base-environment
 maintainer:
     name: Andrea F. Daniele
     email: afdaniele@duckietown.com
-description: Base image of any Duckietown software module
+description: Base image of any Duckietown software module, based on Ubuntu.
 icon: square
 version: 4.1.6

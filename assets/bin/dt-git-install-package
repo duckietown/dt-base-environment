@@ -7,5 +7,5 @@ set -ex
 
 cd /tmp/
 wget --no-check-certificate https://github.com/${PACKAGE}/archive/refs/tags/${VERSION}.zip
-unzip ${VERSION}.zip -d "${COLCON_WS_DIR}/src/${PROJECT_NAME}/packages/"
+unzip ${VERSION}.zip -d "${SOURCE_DIR}/${PROJECT_NAME}/packages/"
 rm ${VERSION}.zip

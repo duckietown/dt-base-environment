@@ -1,12 +1,12 @@
 # parameters
 ARG ARCH
 ARG DISTRO
-ARG BASE_REPOSITORY=ubuntu
-ARG BASE_TAG=jammy
+ARG BASE_REPOSITORY
+ARG BASE_TAG
 ARG LAUNCHER=default
 # ---
-ARG PROJECT_NAME="dt-base-environment"
-ARG PROJECT_MAINTAINER="Andrea F. Daniele (afdaniele@duckietown.com)"
+ARG PROJECT_NAME
+ARG PROJECT_MAINTAINER
 ARG PROJECT_DESCRIPTION="Base image of any Duckietown software module. Based on ${BASE_REPOSITORY}:${BASE_TAG}."
 ARG PROJECT_ICON="square"
 ARG PROJECT_FORMAT_VERSION
@@ -55,12 +55,12 @@ ENV OS_FAMILY="${BASE_REPOSITORY}" \
     OS_DISTRO="${BASE_TAG}"
 
 # code environment
-ENV SOURCE_DIR="/code" \
+ENV SOURCE_DIR="/code/src" \
     LAUNCHERS_DIR="/launch" \
-    COLCON_WS_DIR="/code/catkin_ws" \
+    USER_WS_DIR="/user_ws" \
     MINIMUM_DTPROJECT_FORMAT_VERSION="4"
 
-ENV USER_WS_DIR "${SOURCE_DIR}/user_ws"
+# start inside the course code directory
 WORKDIR "${SOURCE_DIR}"
 
 # copy QEMU
@@ -72,7 +72,7 @@ COPY ./assets/bin/. /usr/local/bin/
 # define and create repository paths
 ARG PROJECT_PATH="${SOURCE_DIR}/${PROJECT_NAME}"
 ARG PROJECT_LAUNCHERS_PATH="${LAUNCHERS_DIR}/${PROJECT_NAME}"
-RUN mkdir -p "${COLCON_WS_DIR}/src/${PROJECT_NAME}/packages" "${PROJECT_PATH}" "${PROJECT_LAUNCHERS_PATH}" "${USER_WS_DIR}"
+RUN mkdir -p "${PROJECT_PATH}/packages" "${PROJECT_LAUNCHERS_PATH}" "${USER_WS_DIR}"
 
 # keep some arguments as environment variables
 ENV DT_PROJECT_NAME="${PROJECT_NAME}" \
@@ -156,5 +156,5 @@ RUN dt-git-install-package "ros2/launch" 3.1.0 && \
     dt-git-install-package "ament/ament_index" 1.7.0
 
 # build packages
-RUN cd ${COLCON_WS_DIR} && \
+RUN cd ${SOURCE_DIR} && \
     colcon build
