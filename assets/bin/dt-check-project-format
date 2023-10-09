@@ -22,7 +22,7 @@ def main():
     min_project_format: str = os.environ.get("MINIMUM_DTPROJECT_FORMAT_VERSION", None)
     if min_project_format is None:
         print(f"ERROR: Environment variable 'MINIMUM_DTPROJECT_FORMAT_VERSION' not set. This should not have "
-              f"appened. Reach out to the technical support.")
+              f"appened. Reach out to the technical support team.")
         exit(1)
     # make sure the minimum project format is an integer
     try:
@@ -30,7 +30,7 @@ def main():
     except ValueError:
         print(f"ERROR: Environment variable 'MINIMUM_DTPROJECT_FORMAT_VERSION' is set to "
               f"'{min_project_format}'. This should not have appened. An integer was expected. "
-              f"Reach out to the technical support.")
+              f"Reach out to the technical support team.")
         exit(2)
     # compare format versions
     if parsed.format[0] < min_project_format:
