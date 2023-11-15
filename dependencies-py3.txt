@@ -1,27 +1,31 @@
 # LIST YOUR PYTHON PACKAGES HERE
 # NOTE: only place non-Duckietown libraries here; pin versions only if necessary
 
+# NOTE: ------------------------------------------------------------------------------------------------------
+# NOTE: Use only '<=' here to cover the needs of dt-ros-commons that is based on an older OS / Python version
+# NOTE: ------------------------------------------------------------------------------------------------------
+
 # commonly used libraries
-wheel==0.37.1
-smbus==1.1.post2
-termcolor==2.3.0
-tables==3.9.1
-lxml==4.9.3
-bs4==0.0.1
-pymongo==4.6.0
-scipy==1.11.3
-numpy==1.26.2
-networkx==3.2.1
-Pillow==10.1.0
-kiwisolver==1.4.5
-PyTurboJPEG==1.7.2
-pipdeptree==2.13.1
-matplotlib==3.8.1
-setuptools==58.2.0
+wheel<=0.37.1
+smbus<=1.1.post2
+termcolor<=2.3.0
+tables<=3.9.1
+lxml<=4.9.3
+bs4<=0.0.1
+pymongo<=4.6.0
+scipy<=1.11.3
+numpy<=1.26.2
+networkx<=3.2.1
+Pillow<=10.1.0
+kiwisolver<=1.4.5
+PyTurboJPEG<=1.7.2
+pipdeptree<=2.13.1
+matplotlib<=3.8.1
+setuptools<=58.2.0
 
 # colcon build system
-colcon-common-extensions==0.3.0
+colcon-common-extensions<=0.3.0
 
 # these are required by colcon
-osrf-pycommon==2.0.2
-lark==1.1.8
+osrf-pycommon<=2.0.2
+lark<=1.1.8
