@@ -44,6 +44,7 @@ libjpeg-dev
 zlib1g-dev
 
 # colcon/ament packages
-ament-cmake ament-lint
+ament-cmake
+ament-lint
 ament-cmake-pytest
 ament-cmake-googletest
