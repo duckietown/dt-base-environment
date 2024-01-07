@@ -20,6 +20,10 @@ cat ${PACKAGES_LISTS} > ${PACKAGES_LIST}
 PACKAGES=$(awk -F: '/^[^#]/ { print $1 }' $PACKAGES_LIST | uniq)
 HAS_PACKAGES=$(echo $PACKAGES | sed '/^\s*#/d;/^\s*$/d' | wc -l)
 
+# store the state of the environment before installing packages
+FIRST_PACKAGE_LIST_DIR=$(dirname $(realpath $(echo $1 | awk '{print $1}')))
+python3 -m pip freeze --all > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.before.dat"
+
 # install packages (if any)
 if [ $HAS_PACKAGES -eq 1 ]; then
   # print out packages
@@ -33,6 +37,9 @@ if [ $HAS_PACKAGES -eq 1 ]; then
 else
   echo "No packages to install via PIP3."
 fi
+
+# store the state of the environment after installing packages
+python3 -m pip freeze --all > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.after.dat"
 
 # cleanup
 rm ${PACKAGES_LIST}
