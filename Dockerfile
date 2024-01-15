@@ -107,8 +107,8 @@ RUN dt-pip3-install "${PROJECT_PATH}/dependencies-py3.*"
 RUN dt-args-check \
     "ARCH" "${ARCH}" \
     "DISTRO" "${DISTRO}" \
-    "PROJECT_FORMAT_VERSION" "${PROJECT_FORMAT_VERSION}"
-RUN dt-check-project-format "${PROJECT_FORMAT_VERSION}"
+    "PROJECT_FORMAT_VERSION" "${PROJECT_FORMAT_VERSION}" \
+    && dt-check-project-format "${PROJECT_FORMAT_VERSION}"
 
 # copy the assets (needed by sibling images)
 COPY ./assets "${PROJECT_PATH}/assets"
