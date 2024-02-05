@@ -157,5 +157,5 @@ RUN dt-git-install-package "ros2/launch" 3.1.0 && \
     dt-git-install-package "ament/ament_index" 1.7.0
 
 # build packages
-RUN cd ${SOURCE_DIR} && \
-    colcon build
+RUN cd ${WORKSPACE_DIR} && \
+    colcon build --symlink-install
