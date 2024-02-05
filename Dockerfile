@@ -55,7 +55,8 @@ ENV OS_FAMILY="${BASE_REPOSITORY}" \
     OS_DISTRO="${BASE_TAG}"
 
 # code environment
-ENV SOURCE_DIR="/code/src" \
+ENV WORKSPACE_DIR="/code" \
+    SOURCE_DIR="/code/src" \
     LAUNCHERS_DIR="/launch" \
     USER_WS_DIR="/user_ws" \
     MINIMUM_DTPROJECT_FORMAT_VERSION="4"
