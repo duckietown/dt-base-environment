@@ -87,19 +87,35 @@ ENV DT_PROJECT_NAME="${PROJECT_NAME}" \
 
 # Install gnupg required for apt-key (not in base image since Focal)
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends gnupg \
+  && apt-get install -y --no-install-recommends gnupg ca-certificates \
   && rm -rf /var/lib/apt/lists/*
+
+# add deadsnakes repository
+COPY assets/python3.11/deadsnakes.list /etc/apt/sources.list.d/deadsnakes.list
+
+# install Python 3.11
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
+    && apt-get update -y \
+    && apt-get install -y python3.11-dev \
+    && ln -s /usr/bin/python3.11 /usr/bin/python3 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100 \
+    && rm -rf /var/lib/apt/lists/*
 
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${PROJECT_PATH}/"
 RUN dt-apt-install "${PROJECT_PATH}/dependencies-apt.txt"
 
+# set Python 3.11 as default (NOTE: needed AGAIN after installing the dependencies above)
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100
+
 # install dependencies (PIP3)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 
-# upgrade PIP
-RUN python3 -m pip install pip==23.2
+# install PIP
+RUN wget --quiet https://bootstrap.pypa.io/get-pip.py && \
+    python3 get-pip.py && \
+    rm get-pip.py
 
 # install dependencies (PIP3)
 COPY ./dependencies-py3.* "${PROJECT_PATH}/"
