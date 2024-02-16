@@ -45,6 +45,7 @@ ENV INITSYSTEM="off" \
     DISABLE_CONTRACTS=1 \
     QEMU_EXECVE=1 \
     PIP_NO_CACHE_DIR=1 \
+    PYTHON_VERSION=3.11 \
     PIP_ROOT_USER_ACTION=ignore
 
 # nvidia runtime configuration
@@ -91,14 +92,14 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # add deadsnakes repository
-COPY assets/python3.11/deadsnakes.list /etc/apt/sources.list.d/deadsnakes.list
+COPY assets/apt-sources.list.d/deadsnakes.list /etc/apt/sources.list.d/deadsnakes.list
 
 # install Python 3.11
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
     && apt-get update -y \
-    && apt-get install -y python3.11-dev \
-    && ln -s /usr/bin/python3.11 /usr/bin/python3 \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100 \
+    && apt-get install -y python${PYTHON_VERSION}-dev \
+    && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 100 \
     && rm -rf /var/lib/apt/lists/*
 
 # install dependencies (APT)
@@ -106,7 +107,7 @@ COPY ./dependencies-apt.txt "${PROJECT_PATH}/"
 RUN dt-apt-install "${PROJECT_PATH}/dependencies-apt.txt"
 
 # set Python 3.11 as default (NOTE: needed AGAIN after installing the dependencies above)
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 100
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 100
 
 # install dependencies (PIP3)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
