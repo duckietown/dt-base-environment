@@ -170,10 +170,15 @@ LABEL \
     org.duckietown.label.base.tag="${BASE_TAG}"
 
 # install packages
-RUN dt-git-install-package "ros2/launch" 3.1.0 && \
-    dt-git-install-package "ros2/python_cmake_module" 0.11.0 && \
-    dt-git-install-package "ament/ament_index" 1.7.0
+RUN dt-git-install-package "ros2/launch" 3.1.0 "/opt/colcon/src" && \
+    dt-git-install-package "ros2/python_cmake_module" 0.11.0 "/opt/colcon/src" && \
+    dt-git-install-package "ament/ament_index" 1.7.0 "/opt/colcon/src"
+
+# build colcon default workspace
+RUN cd /opt/colcon && \
+    colcon build
 
 # build packages
 RUN cd ${WORKSPACE_DIR} && \
+    . /opt/colcon/install/setup.sh && \
     colcon build --symlink-install

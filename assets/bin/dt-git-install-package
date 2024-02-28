@@ -2,10 +2,13 @@
 
 PACKAGE=$1
 VERSION=$2
+DESTINATION="${3:-${SOURCE_DIR}/${PROJECT_NAME}/packages/}"
 
 set -ex
 
+mkdir -p "${DESTINATION}"
+
 cd /tmp/
 wget --no-check-certificate https://github.com/${PACKAGE}/archive/refs/tags/${VERSION}.zip
-unzip ${VERSION}.zip -d "${SOURCE_DIR}/${PROJECT_NAME}/packages/"
+unzip ${VERSION}.zip -d "${DESTINATION}"
 rm ${VERSION}.zip
