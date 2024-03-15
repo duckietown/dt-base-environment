@@ -182,3 +182,6 @@ RUN cd /opt/colcon && \
 RUN cd ${WORKSPACE_DIR} && \
     . /opt/colcon/install/setup.sh && \
     colcon build --symlink-install
+
+# set stop signal
+STOPSIGNAL SIGINT
