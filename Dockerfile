@@ -139,7 +139,7 @@ COPY ./packages "${PROJECT_PATH}/packages"
 ENV COLUMNS 160
 
 # install launcher scripts
-COPY ./launchers/default.sh "${PROJECT_LAUNCHERS_PATH}/"
+COPY ./launchers/. "${PROJECT_LAUNCHERS_PATH}/"
 RUN dt-install-launchers "${PROJECT_LAUNCHERS_PATH}"
 
 # define default command
