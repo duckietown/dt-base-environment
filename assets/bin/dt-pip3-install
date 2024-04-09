@@ -7,17 +7,24 @@ if [ "$#" -eq 0 ]; then
     exit 1;
 fi
 
-PACKAGES_LISTS=$*
 PACKAGES_LIST=/tmp/pip3-dependencies-list.combined
+PACKAGES_LIST_FILTERED=/tmp/pip3-dependencies-list-filtered.combined
+
+# receive the list of dependencies files
+PACKAGES_LISTS=$*
 
 # add empty line to the end of all files
 sed -i -e '$a\' ${PACKAGES_LISTS}
 
+# remove *.computed.txt files from the list
+PACKAGES_LISTS_FILTERED=$(echo ${PACKAGES_LISTS[@]} | sed 's/ /\n/g' | grep -v \.computed\.txt)
+
 # combined all dependencies lists into a single file
 cat ${PACKAGES_LISTS} > ${PACKAGES_LIST}
+cat ${PACKAGES_LISTS_FILTERED} > ${PACKAGES_LIST_FILTERED}
 
 # check if there are packages listed
-PACKAGES=$(awk -F: '/^[^#]/ { print $1 }' $PACKAGES_LIST | uniq)
+PACKAGES=$(awk -F: '/^[^#]/ { print $1 }' $PACKAGES_LIST_FILTERED | uniq)
 HAS_PACKAGES=$(echo $PACKAGES | sed '/^\s*#/d;/^\s*$/d' | wc -l)
 
 # store the state of the environment before installing packages
@@ -27,7 +34,7 @@ python3 -m pip freeze --all > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.before.dat"
 # install packages (if any)
 if [ $HAS_PACKAGES -eq 1 ]; then
   # print out packages
-  echo -e "The packages list as sent to 'pip' is:\n"
+  echo -e "The list of Python dependencies (excluding *.computed.txt lists) is:\n"
   echo ${PACKAGES} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
   echo ""
   # install packages
