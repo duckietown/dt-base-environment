@@ -9,12 +9,20 @@ fi
 
 PACKAGES_LISTS=$*
 PACKAGES_LIST=/tmp/pip3-dependencies-list.combined
+MOCKED_LIST=/tmp/pip3-dependencies-list.mock
 
 # add empty line to the end of all files
 sed -i -e '$a\' ${PACKAGES_LISTS}
 
 # combined all dependencies lists into a single file
-cat ${PACKAGES_LISTS} > ${PACKAGES_LIST}
+cat ${PACKAGES_LISTS} > ${PACKAGES_LIST}.raw
+
+# combine all mocked dependencies into a single file
+MOCKED_LISTS=$(find "${SOURCE_DIR}" -type f -name "dependencies-py3.mock.txt")
+cat ${MOCKED_LISTS} > ${MOCKED_LIST}
+
+# remove mocked dependencies
+grep -F -x -v -f ${MOCKED_LIST} ${PACKAGES_LIST}.raw > ${PACKAGES_LIST}
 
 # check if there are packages listed
 PACKAGES=$(awk -F: '/^[^#]/ { print $1 }' $PACKAGES_LIST | uniq)
