@@ -142,7 +142,7 @@ HEALTHCHECK \
 ENV COLUMNS 160
 
 # install launcher scripts
-COPY ./launchers/default.sh "${LAUNCH_PATH}/"
+COPY ./launchers/* "${LAUNCH_PATH}/"
 RUN dt-install-launchers "${LAUNCH_PATH}"
 
 # define default command
