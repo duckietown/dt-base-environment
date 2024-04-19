@@ -19,7 +19,7 @@ sed -i -e '$a\' ${PACKAGES_LISTS}
 # remove *.computed.txt files from the list
 PACKAGES_LISTS_FILTERED=$(echo ${PACKAGES_LISTS[@]} | sed 's/ /\n/g' | grep -v \.computed\.txt)
 
-# combined all dependencies lists into a single file
+# combined all dependencies lists into two files, (all deps) and (all deps minus what is in *.computed.txt files)
 cat ${PACKAGES_LISTS} > ${PACKAGES_LIST}
 cat ${PACKAGES_LISTS_FILTERED} > ${PACKAGES_LIST_FILTERED}
 

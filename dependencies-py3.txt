@@ -6,7 +6,6 @@
 # NOTE: ------------------------------------------------------------------------------------------------------
 
 # commonly used libraries
-wheel<=0.37.1
 smbus<=1.1.post2
 termcolor<=2.3.0
 tables<=3.9.1
@@ -21,7 +20,7 @@ kiwisolver<=1.4.5
 PyTurboJPEG<=1.7.2
 pipdeptree<=2.13.1
 matplotlib<=3.8.1
-setuptools<=58.2.0
+setuptools<=68.1.2
 
 # colcon build system
 colcon-common-extensions<=0.3.0

@@ -45,7 +45,8 @@ ENV INITSYSTEM="off" \
     DISABLE_CONTRACTS=1 \
     QEMU_EXECVE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PYTHON_VERSION=3.11 \
+    PYTHON_VERSION=3.12 \
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
     PIP_ROOT_USER_ACTION=ignore
 
 # nvidia runtime configuration
@@ -91,27 +92,9 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends gnupg ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# add deadsnakes repository
-COPY assets/apt-sources.list.d/deadsnakes.list /etc/apt/sources.list.d/deadsnakes.list
-
-# install Python 3.11
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys F23C5A6CF475977595C89F51BA6932366A755776 \
-    && apt-get update -y \
-    && apt-get install -y python${PYTHON_VERSION}-dev \
-    && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 100 \
-    && rm -rf /var/lib/apt/lists/*
-
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${PROJECT_PATH}/"
 RUN dt-apt-install "${PROJECT_PATH}/dependencies-apt.txt"
-
-# set Python 3.11 as default (NOTE: needed AGAIN after installing the dependencies above)
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 100
-
-# install dependencies (PIP3)
-ARG PIP_INDEX_URL="https://pypi.org/simple"
-ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 
 # install PIP
 RUN wget --quiet https://bootstrap.pypa.io/get-pip.py && \
@@ -119,6 +102,8 @@ RUN wget --quiet https://bootstrap.pypa.io/get-pip.py && \
     rm get-pip.py
 
 # install dependencies (PIP3)
+ARG PIP_INDEX_URL="https://pypi.org/simple"
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./dependencies-py3.* "${PROJECT_PATH}/"
 RUN dt-pip3-install "${PROJECT_PATH}/dependencies-py3.*"
 
@@ -170,9 +155,9 @@ LABEL \
     org.duckietown.label.base.tag="${BASE_TAG}"
 
 # install packages
-RUN dt-git-install-package "ros2/launch" 3.1.0 "/opt/colcon/src" && \
-    dt-git-install-package "ros2/python_cmake_module" 0.11.0 "/opt/colcon/src" && \
-    dt-git-install-package "ament/ament_index" 1.7.0 "/opt/colcon/src"
+RUN dt-git-install-package "ros2/launch" 3.4.2 "/opt/colcon/src" && \
+    dt-git-install-package "ros2/python_cmake_module" 0.11.1 "/opt/colcon/src" && \
+    dt-git-install-package "ament/ament_index" 1.8.0 "/opt/colcon/src"
 
 # build colcon default workspace
 RUN cd /opt/colcon && \
