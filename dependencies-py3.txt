@@ -1,6 +1,4 @@
 # LIST YOUR PYTHON PACKAGES HERE
-# NOTE: only place non-Duckietown libraries here; pin versions only if necessary
-
 # NOTE: ------------------------------------------------------------------------------------------------------
 # NOTE: Use only '<=' here to cover the needs of dt-ros-commons that is based on an older OS / Python version
 # NOTE: ------------------------------------------------------------------------------------------------------
