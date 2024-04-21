@@ -3,22 +3,26 @@
 # NOTE: Use only '<=' here to cover the needs of dt-ros-commons that is based on an older OS / Python version
 # NOTE: ------------------------------------------------------------------------------------------------------
 
-# commonly used libraries
+# libraries
 smbus<=1.1.post2
 termcolor<=2.3.0
 tables<=3.9.1
 lxml<=4.9.3
 bs4<=0.0.1
 pymongo<=4.6.0
-scipy<=1.11.3
-numpy<=1.26.4
-networkx<=3.2.1
-Pillow<=10.1.0
 kiwisolver<=1.4.5
-PyTurboJPEG<=1.7.2
+
+# pip libraries
 pipdeptree<=2.13.1
-matplotlib<=3.8.1
-setuptools<=68.1.2
+setuptools<=69.5.0
+
+# commonly used libraries
+scipy<=1.13.0
+numpy<=1.26.4
+networkx<=3.3.0
+Pillow<=10.3.0
+PyTurboJPEG<=1.7.3
+matplotlib<=3.8.4
 
 # colcon build system
 colcon-common-extensions<=0.3.0
