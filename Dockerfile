@@ -64,6 +64,9 @@ ENV WORKSPACE_DIR="/code" \
     USER_WS_DIR="/user_ws" \
     MINIMUM_DTPROJECT_FORMAT_VERSION="4"
 
+# change default user's UID as 1000 is commonly used as the first non-root user in many linux distros
+RUN usermod -u 3333 ubuntu
+
 # start inside the course code directory
 WORKDIR "${SOURCE_DIR}"
 
