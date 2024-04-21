@@ -7,46 +7,80 @@ if [ "$#" -eq 0 ]; then
     exit 1;
 fi
 
-PACKAGES_LIST=/tmp/pip3-dependencies-list.combined
-PACKAGES_LIST_FILTERED=/tmp/pip3-dependencies-list-filtered.combined
+# base filename for packages lists
+PACKAGES_LIST=/tmp/pip3-dependencies-list
+# location of the first dependencies files in the list
+FIRST_PACKAGE_LIST_DIR=$(dirname $(realpath $(echo $1 | awk '{print $1}')))
+
+# print out some info about Python and Pip
+python3 --version
+pip3 --version
 
 # receive the list of dependencies files
-PACKAGES_LISTS=$*
+DEPENDENCIES_FILES=$*
+echo -e "\nPackages lists to process:\n"
+echo ${DEPENDENCIES_FILES} | sed 's/ /\n/g' | sed 's/^/     /' | uniq
 
 # add empty line to the end of all files
-sed -i -e '$a\' ${PACKAGES_LISTS}
+sed -i -e '$a\' ${DEPENDENCIES_FILES}
 
 # remove *.computed.txt files from the list
-PACKAGES_LISTS_FILTERED=$(echo ${PACKAGES_LISTS[@]} | sed 's/ /\n/g' | grep -v \.computed\.txt)
+DEPENDENCIES_FILES_COMPUTED=$(echo ${DEPENDENCIES_FILES[@]} | sed 's/ /\n/g' | grep \.computed\.txt)
+DEPENDENCIES_FILES_EXPLICIT=$(echo ${DEPENDENCIES_FILES[@]} | sed 's/ /\n/g' | grep -v \.computed\.txt)
+echo -e "\n\nLists of computed dependencies:\n"
+echo ${DEPENDENCIES_FILES_COMPUTED} | sed 's/ /\n/g' | sed 's/^/     /' | uniq
 
-# combined all dependencies lists into two files, (all deps) and (all deps minus what is in *.computed.txt files)
-cat ${PACKAGES_LISTS} > ${PACKAGES_LIST}
-cat ${PACKAGES_LISTS_FILTERED} > ${PACKAGES_LIST_FILTERED}
+# find and combine all mocked dependencies into a single file
+DEPENDENCIES_FILES_MOCKED=$(find "${SOURCE_DIR}" -type f -name "dependencies-py3.mock.txt")
+echo -e "\n\nLists of mocked dependencies:\n"
+echo ${DEPENDENCIES_FILES_MOCKED} | sed 's/ /\n/g' | sed 's/^/     /' | uniq
+
+# combined all dependencies lists into 3 files,
+#  - all deps;
+#  - explicit, that is all deps _minus_ what is in *.computed.txt files;
+#  - mocked, that is depedencies PIP should ignore
+cat ${DEPENDENCIES_FILES} > ${PACKAGES_LIST}.all
+cat ${DEPENDENCIES_FILES_EXPLICIT} > ${PACKAGES_LIST}.explicit
+cat ${DEPENDENCIES_FILES_MOCKED} > ${PACKAGES_LIST}.mocked
+
+# remove mocked dependencies
+grep -F -x -v -f ${PACKAGES_LIST}.mocked ${PACKAGES_LIST}.all > ${PACKAGES_LIST}.toinstall
+
+# read lists back
+PACKAGES_EXPLICIT=$(awk -F: '/^[^#]/ { print $1 }' ${PACKAGES_LIST}.explicit | uniq)
+PACKAGES_TOINSTALL=$(awk -F: '/^[^#]/ { print $1 }' ${PACKAGES_LIST}.toinstall | uniq)
+PACKAGES_MOCKED=$(awk -F: '/^[^#]/ { print $1 }' ${PACKAGES_LIST}.mocked | uniq)
 
 # check if there are packages listed
-PACKAGES=$(awk -F: '/^[^#]/ { print $1 }' $PACKAGES_LIST_FILTERED | uniq)
-HAS_PACKAGES=$(echo $PACKAGES | sed '/^\s*#/d;/^\s*$/d' | wc -l)
+HAS_PACKAGES=$(echo $PACKAGES_EXPLICIT | sed '/^\s*#/d;/^\s*$/d' | wc -l)
 
 # store the state of the environment before installing packages
-FIRST_PACKAGE_LIST_DIR=$(dirname $(realpath $(echo $1 | awk '{print $1}')))
 python3 -m pip freeze --all > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.before.dat"
 
 # install packages (if any)
 if [ $HAS_PACKAGES -eq 1 ]; then
   # print out packages
-  echo -e "The list of Python dependencies (excluding *.computed.txt lists) is:\n"
-  echo ${PACKAGES} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
+  echo -e "\nList of explicit Python dependencies (excluding *.computed.txt lists):\n"
+  echo ${PACKAGES_EXPLICIT} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
+  echo ""
+  # print out computed packages
+  echo -e "\nList of all dependencies, as sent to pip:\n"
+  echo ${PACKAGES_TOINSTALL} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
+  echo ""
+  # print out mocked packages
+  echo -e "\nList of mocked dependencies. These packages will NOT be sent to pip:\n"
+  echo ${PACKAGES_MOCKED} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
   echo ""
   # install packages
-  echo "Installing packages via PIP3..."
-  python3 -m pip install -r ${PACKAGES_LIST}
+  echo "Installing packages using PIP3..."
+  python3 -m pip install -r ${PACKAGES_LIST}.toinstall
   echo "PIP3 packages installed."
 else
-  echo "No packages to install via PIP3."
+  echo "No Python packages to install."
 fi
 
 # store the state of the environment after installing packages
 python3 -m pip freeze --all > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.after.dat"
 
 # cleanup
-rm ${PACKAGES_LIST}
+rm ${PACKAGES_LIST}*
