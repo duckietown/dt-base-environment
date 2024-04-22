@@ -25,8 +25,8 @@ echo ${DEPENDENCIES_FILES} | sed 's/ /\n/g' | sed 's/^/     /' | uniq
 sed -i -e '$a\' ${DEPENDENCIES_FILES}
 
 # remove *.computed.txt files from the list
-DEPENDENCIES_FILES_COMPUTED=$(echo ${DEPENDENCIES_FILES[@]} | sed 's/ /\n/g' | grep \.computed\.txt)
-DEPENDENCIES_FILES_EXPLICIT=$(echo ${DEPENDENCIES_FILES[@]} | sed 's/ /\n/g' | grep -v \.computed\.txt)
+DEPENDENCIES_FILES_COMPUTED=$(echo ${DEPENDENCIES_FILES[@]} | sed 's/ /\n/g' | grep \.computed\.txt || true)
+DEPENDENCIES_FILES_EXPLICIT=$(echo ${DEPENDENCIES_FILES[@]} | sed 's/ /\n/g' | grep -v \.computed\.txt || true)
 echo -e "\n\nLists of computed dependencies:\n"
 echo ${DEPENDENCIES_FILES_COMPUTED} | sed 's/ /\n/g' | sed 's/^/     /' | uniq
 
