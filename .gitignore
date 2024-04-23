@@ -2,3 +2,7 @@
 
 # otherwise CI thinks index not clean
 *.resolved
+
+# libraries
+libraries/*
+!libraries/PLACE_YOUR_PYTHON_LIBRARIES_SUBMODULES_HERE
