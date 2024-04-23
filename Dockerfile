@@ -64,7 +64,7 @@ ENV WORKSPACE_DIR="/code" \
     USER_WS_DIR="/user_ws" \
     MINIMUM_DTPROJECT_FORMAT_VERSION="4"
 
-# change default user's UID as 1000 is commonly used as the first non-root user in many linux distros
+# change default user's UID from 1000 to 3333 as 1000 is commonly used as the first non-root user in many linux distros
 RUN usermod -u 3333 ubuntu
 
 # start inside the course code directory
@@ -156,20 +156,6 @@ LABEL \
     org.duckietown.label.base.organization="${ARCH}" \
     org.duckietown.label.base.repository="${BASE_REPOSITORY}" \
     org.duckietown.label.base.tag="${BASE_TAG}"
-
-# install packages
-RUN dt-git-install-package "ros2/launch" 3.4.2 "/opt/colcon/src" && \
-    dt-git-install-package "ros2/python_cmake_module" 0.11.1 "/opt/colcon/src" && \
-    dt-git-install-package "ament/ament_index" 1.8.0 "/opt/colcon/src"
-
-# build colcon default workspace
-RUN cd /opt/colcon && \
-    colcon build
-
-# build packages
-RUN cd ${WORKSPACE_DIR} && \
-    . /opt/colcon/install/setup.sh && \
-    colcon build --symlink-install
 
 # set stop signal
 STOPSIGNAL SIGINT

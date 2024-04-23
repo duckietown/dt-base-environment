@@ -23,10 +23,3 @@ networkx<=3.3.0
 Pillow<=10.3.0
 PyTurboJPEG<=1.7.3
 matplotlib<=3.8.4
-
-# colcon build system
-colcon-common-extensions<=0.3.0
-
-# these are required by colcon
-osrf-pycommon<=2.0.2
-lark<=1.1.8
