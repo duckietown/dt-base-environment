@@ -82,14 +82,17 @@ ENV DT_REPO_PATH="${REPO_PATH}" \
 
 # Install gnupg required for apt-key (not in base image since Focal)
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends gnupg \
+  && apt-get install -y --no-install-recommends gnupg2 curl lsb-release ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
 # setup ROS sources
-RUN apt-key adv \
-    --keyserver hkp://keyserver.ubuntu.com:80 \
-    --recv-keys F42ED6FBAB17C654 \
-    && echo "deb http://packages.ros.org/ros/ubuntu ${OS_DISTRO} main" >> /etc/apt/sources.list.d/ros.list
+RUN curl -sSL "https://raw.githubusercontent.com/ros/rosdistro/master/ros.key" \
+    | gpg --dearmor --output /usr/share/keyrings/ros-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list \
+    && apt-get update \
+    && apt install ros-apt-source  -y --no-install-recommends \
+    && apt-get update \
+    && rm -rf /var/lib/apt/lists/*
 
 # install dependencies (APT)
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
