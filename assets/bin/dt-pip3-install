@@ -12,9 +12,9 @@ PACKAGES_LIST=/tmp/pip3-dependencies-list
 # location of the first dependencies files in the list
 FIRST_PACKAGE_LIST_DIR=$(dirname $(realpath $(echo $1 | awk '{print $1}')))
 
-# print out some info about Python and Pip
+# print out some info about Python and uv
 python3 --version
-pip3 --version
+uv --version
 
 # receive the list of dependencies files
 DEPENDENCIES_FILES=$*
@@ -55,7 +55,7 @@ PACKAGES_MOCKED=$(awk -F: '/^[^#]/ { print $1 }' ${PACKAGES_LIST}.mocked | uniq)
 HAS_PACKAGES=$(echo $PACKAGES_EXPLICIT | sed '/^\s*#/d;/^\s*$/d' | wc -l)
 
 # store the state of the environment before installing packages
-python3 -m pip freeze --all > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.before.dat"
+uv pip freeze > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.before.dat"
 
 # install packages (if any)
 if [ $HAS_PACKAGES -eq 1 ]; then
@@ -64,23 +64,23 @@ if [ $HAS_PACKAGES -eq 1 ]; then
   echo ${PACKAGES_EXPLICIT} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
   echo ""
   # print out computed packages
-  echo -e "\nList of all dependencies, as sent to pip:\n"
+  echo -e "\nList of all dependencies, as sent to uv:\n"
   echo ${PACKAGES_TOINSTALL} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
   echo ""
   # print out mocked packages
-  echo -e "\nList of mocked dependencies. These packages will NOT be sent to pip:\n"
+  echo -e "\nList of mocked dependencies. These packages will NOT be sent to uv:\n"
   echo ${PACKAGES_MOCKED} | sed '/^\s*#/d;/^\s*$/d' | sed 's/ /\n/g' | sed 's/^/     /' | uniq
   echo ""
   # install packages
-  echo "Installing packages using PIP3..."
-  python3 -m pip install -r ${PACKAGES_LIST}.toinstall
-  echo "PIP3 packages installed."
+  echo "Installing packages using uv..."
+  uv pip install -r ${PACKAGES_LIST}.toinstall
+  echo "Python packages installed."
 else
   echo "No Python packages to install."
 fi
 
 # store the state of the environment after installing packages
-python3 -m pip freeze --all > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.after.dat"
+uv pip freeze > "${FIRST_PACKAGE_LIST_DIR}/pip-freeze.after.dat"
 
 # cleanup
 rm ${PACKAGES_LIST}*
