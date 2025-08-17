@@ -47,7 +47,9 @@ ENV INITSYSTEM="off" \
     PIP_NO_CACHE_DIR=1 \
     PYTHON_VERSION=3.12 \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
-    PIP_ROOT_USER_ACTION=ignore
+    PIP_ROOT_USER_ACTION=ignore \
+    UV_SYSTEM_PYTHON=1 \
+    UV_BREAK_SYSTEM_PACKAGES=1
 
 # nvidia runtime configuration
 ENV NVIDIA_VISIBLE_DEVICES="all" \
@@ -103,6 +105,9 @@ RUN dt-apt-install "${PROJECT_PATH}/dependencies-apt.txt"
 RUN wget --quiet https://bootstrap.pypa.io/get-pip.py && \
     python3 get-pip.py && \
     rm get-pip.py
+
+# install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # install dependencies (PIP3)
 ARG PIP_INDEX_URL="https://pypi.org/simple"
