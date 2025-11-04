@@ -29,7 +29,7 @@ pyparsing==2.4.6
 python-dateutil==2.7.3
 python-gnupg==0.4.5
 roman==2.0.0
-rosdep-modules==0.22.2
+rosdep==0.22.2
 rosdistro-modules==0.9.0
 rospkg-modules==1.5.0
 rospkg==1.5.0
